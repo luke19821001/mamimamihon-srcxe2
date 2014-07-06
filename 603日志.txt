@@ -1,0 +1,15 @@
+1\解决切磋可能导致跳出的问题
+2、降低战斗中休息恢复的HP，特别是HP总量较高时衰减严重
+3\战斗中，超过一定时序后可以按Q键逃离战斗
+4、鹿鼎记台湾战正线首战跳出BUG、小兵出界、2个无尘
+
+if rnum < 0 then
+  begin
+    rnum := eventcaller(ex, ey);
+    if (rnum < 0) or (rnum > length(Rrole) - 1) then
+      rnum:=0;
+  end;
+
+namelen := length(Rrole[rnum].Name) + 2;
+
+装备内功闭关，增加属性不对
