@@ -1074,7 +1074,7 @@ begin
   Redraw;
   x := 40;
   y := CENTER_Y - 160;
-  display_imgFromSurface(MPZHUANGTAI_PIC, 0, 0);
+  display_imgFromSurface(MPZHUANGTAI_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 315, 0, ColColor(255), 50);
   // 显示門派
   Name := gbktounicode(@rmenpai[mpnum].Name);
@@ -1142,7 +1142,7 @@ begin
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
   WaitAnyKey;
   Redraw;
-  display_imgFromSurface(MPZHUANGTAI_PIC, 0, 0);
+  display_imgFromSurface(MPZHUANGTAI_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 315, 0, ColColor(255), 50);
   Name := '－－－－－－－－門派關係－－－－－－－－';
   DrawShadowText(@Name[1], CENTER_X - length(Name) * 10 - 9, y + 15,
@@ -2257,7 +2257,7 @@ begin
   strs[5] := '位置';
   strs[6] := ' 前頁';
   strs[7] := ' 后頁';
-  display_imgFromSurface(DIZI_PIC, 0, 0);
+  display_imgFromSurface(DIZI_PIC.pic, 0, 0);
   DrawRectangle(x - 30, y, 590, 315, 0, ColColor(255), 50);
   for i := 0 to 5 do
   begin
@@ -3141,7 +3141,7 @@ begin
   strs[8] := '維持成本：';
   strs[9] := '庫存資源：';
 
-  display_imgFromSurface(JIANSHE_PIC, 0, 0);
+  display_imgFromSurface(JIANSHE_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 385, 0, ColColor(255), 30);
   DrawRectangle(x + 260, y + 220, 280, 155, 0, ColColor(255), 50);
   DrawRectangle(x + 260, y + 25, 280, 90, 0, ColColor(255), 50);
@@ -3267,7 +3267,7 @@ begin
   strs[8] := '維持成本：';
   strs[9] := '庫存資源：';
 
-  display_imgFromSurface(JIANSHE_PIC, 0, 0);
+  display_imgFromSurface(JIANSHE_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 385, 0, ColColor(255), 30);
   DrawRectangle(x + 260, y + 220, 280, 155, 0, ColColor(255), 50);
   DrawRectangle(x + 260, y + 25, 280, 90, 0, ColColor(255), 50);
@@ -3763,7 +3763,7 @@ begin
         trole[j] := i;
         names[j] := gbktounicode(@Rrole[i].Name);
       end;
-  display_imgFromSurface(RENMING_PIC, 0, 0);
+  display_imgFromSurface(RENMING_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 340, 0, ColColor(255), 30);
   DrawShadowText(@strs[10][1], x + 15, y + 20, ColColor(249), ColColor(252));
   DrawShadowText(@strs[11][1], x + 15, y + 310, ColColor($5), ColColor($7));
@@ -4127,7 +4127,7 @@ begin
     Inc(k);
   end;
   k := min(19, k);
-  display_imgFromSurface(MPNeigong_PIC, 0, 0);
+  display_imgFromSurface(MPNeigong_PIC.pic, 0, 0);
   DrawRectangle(x, y, 610, 380, 0, ColColor(255), 30);
   DrawShadowText(@strs[1][1], x + 15, y + 20, ColColor(249), ColColor(252));
   DrawShadowText(@strs[2][1], x - 10, y + 335, 18, ColColor(5), ColColor(7));
@@ -4514,7 +4514,7 @@ var
 begin
   x := 40;
   y := CENTER_Y - 160;
-  display_imgFromSurface(SONGLI_PIC, 0, 0);
+  display_imgFromSurface(SONGLI_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 315, 0, ColColor(255), 50);
   Name := '－－－－－－－－選擇門派－－－－－－－－';
   DrawShadowText(@Name[1], CENTER_X - length(Name) * 10 - 9, y + 15,
@@ -5325,7 +5325,7 @@ var
 begin
   x := 40;
   y := CENTER_Y - 160;
-  display_imgFromSurface(GONGJI_PIC, 0, 0);
+  display_imgFromSurface(GONGJI_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 52, 0, ColColor(255), 50);
   if mods = 0 then
     str := '－－－－－－選擇要移動的地點－－－－－－'
@@ -6498,7 +6498,7 @@ var
 begin
   x := 40;
   y := CENTER_Y - 160;
-  display_imgFromSurface(GONGJI_PIC, 0, 0);
+  display_imgFromSurface(GONGJI_PIC.pic, 0, 0);
   DrawRectangle(x, y, 560, 52, 0, ColColor(255), 50);
   str := '－－－－－－選擇要攻擊的地點－－－－－－';
   DrawShadowText(@str[1], CENTER_X - length(str) * 10 - 9, y + 15,
@@ -9999,7 +9999,7 @@ begin
   strs[2] := '行動';
   strs[3] := ' 前頁';
   strs[4] := ' 后頁';
-  display_imgFromSurface(DIZI_PIC, 0, 0);
+  display_imgFromSurface(DIZI_PIC.pic, 0, 0);
   DrawRectangle(x - 30, y, 590, 315, 0, ColColor(255), 50);
   for i := 0 to 2 do
   begin

@@ -386,7 +386,7 @@ begin
       if Music[MusicNum] <> 0 then
       begin
         // BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
-        if (nowmusic > -1) and (nowmusic < 1000) then
+        if (MusicNum > -1) and (MusicNum < 1000) then
         begin
           BASS_ChannelStop(Music[nowmusic]);
           BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);
@@ -655,7 +655,19 @@ begin
 end;
 
 // 显示tif, png, jpg等格式图片
-
+procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+var
+  grp:integer;
+begin
+  if not(Image.key) and (FileExists(BACKGROUND_file)) then
+  begin
+    grp := FileOpen(BACKGROUND_file, fmopenread);
+    Image.pic := GetPngPic(grp, Image.num);
+    Image.key:=true;
+    fileclose(grp);
+  end;
+  display_imgFromSurface(Image.pic.pic, x, y, x1, y1, w, h)
+end;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y, x1, y1, w, h: integer); overload;
 var
   dest, dest1: TSDL_Rect;
@@ -1962,11 +1974,11 @@ begin
     2:
       DrawBField;
     3:
-      display_imgFromSurface(TITLE2_BEGIN_PIC, 0, 0);
+      display_imgFromSurface(TITLE2_BEGIN_PIC.Pic, 0, 0);
     4:
-      display_imgFromSurface(DEATH_PIC, 0, 0);
+      display_imgFromSurface(DEATH_PIC.Pic, 0, 0);
     6:
-      display_imgFromSurface(TITLE1_BEGIN_PIC, 0, 0);
+      display_imgFromSurface(TITLE1_BEGIN_PIC.Pic, 0, 0);
   end;
   if RShowpic.repeated > 0 then
   begin

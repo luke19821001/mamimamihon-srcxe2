@@ -1257,8 +1257,8 @@ var
   islearn: array[0..4] of boolean;
 begin
   display_imgFromSurface(SHUPU_PIC, 0, 0);
-  display_imgFromSurface(WORD_SHUPU_PIC, 285, 3);
-  display_imgFromSurface(BIAOTIKUANG_PIC, 9, 21);
+  display_imgFromSurface(WORD_SHUPU_PIC.pic, 285, 3);
+  display_imgFromSurface(BIAOTIKUANG_PIC.pic, 9, 21);
   drawroll(125 - 15,21,404,maxshow,max0,menutop,Rollmods);
   //showmessage(inttostr(y));
   m := min(maxshow, max0 + 1);
@@ -1335,11 +1335,11 @@ begin
   begin
     for i := menutop to menutop + m - 1 do
     begin
-      display_imgFromSurface(HUIKUANG_PIC, 9, 48 + 27 * (i - menutop));
+      display_imgFromSurface(HUIKUANG_PIC.pic, 9, 48 + 27 * (i - menutop));
       DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 50 + 27 * (i - menutop),18, ColColor(112));
       if i = menu then
       begin
-        display_imgFromSurface(HUANGKUANG_PIC, 10, 48 + 1 + 27 * (i - menutop));
+        display_imgFromSurface(HUANGKUANG_PIC.pic, 10, 48 + 1 + 27 * (i - menutop));
         DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 23,18, ColColor(112));
       end;
     end;
@@ -1365,7 +1365,7 @@ begin
   begin
     if islearn[i] then
     begin
-      display_imgFromSurface(WORD_ZHAOSHI_PIC[i], 498, 38 + 50 * i);
+      display_imgFromSurface(WORD_ZHAOSHI_PIC[i].pic, 498, 38 + 50 * i);
     end;
   end;
   if (menu >= 0) and (menu < length(tmagic)) then
@@ -3041,20 +3041,20 @@ begin
   strs[22] := ' 足踩';
   strs[23] := ' 資質';
   strs[24] := ' 福源';
-  display_imgFromSurface(STATE_PIC, 0, 0);
-  display_imgFromSurface(WORD_ZHUANGTAI_PIC, 285, 3);
+  display_imgFromSurface(STATE_PIC.pic, 0, 0);
+  display_imgFromSurface(WORD_ZHUANGTAI_PIC.pic, 285, 3);
   drawroll(125 - 15,21,404,20,max0,0);
   if isbattle = False then
   begin
-    display_imgFromSurface(BIAOTIKUANG_PIC, 9, 21);
+    display_imgFromSurface(BIAOTIKUANG_PIC.pic, 9, 21);
     //队友姓名 当前所在位置用白色, 其余用黄色
     for i := 0 to max0 - 1 do
     begin
-      display_imgFromSurface(HUIKUANG_PIC, 9, 48 + 27 * i);
+      display_imgFromSurface(HUIKUANG_PIC.pic, 9, 48 + 27 * i);
       DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 50 + 27 * i,18, ColColor(112));
       if teamlist[i] = rnum then
       begin
-        display_imgFromSurface(HUANGKUANG_PIC, 10, 48 + 1 + 27 * i);
+        display_imgFromSurface(HUANGKUANG_PIC.pic, 10, 48 + 1 + 27 * i);
         DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 23,18, ColColor(112));
       end;
     end;
@@ -3394,16 +3394,16 @@ begin
   RSx:=615;
   RSy:=30;
   display_imgFromSurface(RENWU_PIC, 0, 0);
-  display_imgFromSurface(WORD_RENWU_PIC, 285, 3);
+  display_imgFromSurface(WORD_RENWU_PIC.pic, 285, 3);
   drawroll(125 + 15,21,404,20,max0,0);
-  display_imgFromSurface(BIAOTIKUANG3_PIC, 9, 21);
+  display_imgFromSurface(BIAOTIKUANG3_PIC.pic, 9, 21);
   for i := 0 to max0 -1 do
   begin
-    display_imgFromSurface(HUIKUANG3_PIC, 9, 48 + 27 * i);
+    display_imgFromSurface(HUIKUANG3_PIC.pic, 9, 48 + 27 * i);
     DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 50 + 27 * i,18, ColColor(112));
     if I = MENU then
     begin
-      display_imgFromSurface(HUANGKUANG3_PIC, 10, 48 + 1 + 27 * i);
+      display_imgFromSurface(HUANGKUANG3_PIC.pic, 10, 48 + 1 + 27 * i);
       DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 23,18, ColColor(112));
     end;
   end;
@@ -3899,20 +3899,20 @@ begin
   strs[3] := '升級';
 
 
-  display_imgFromSurface(MAGIC_PIC, 0, 0);
-  display_imgFromSurface(WORD_WUGONG_PIC, 285, 3);
-  display_imgFromSurface(BIAOTIKUANG_PIC, 9, 21);
+  display_imgFromSurface(MAGIC_PIC.pic, 0, 0);
+  display_imgFromSurface(WORD_WUGONG_PIC.pic, 285, 3);
+  display_imgFromSurface(BIAOTIKUANG_PIC.pic, 9, 21);
   drawroll(125 - 15,21,404,20,max0,0);
 
   if where <> 2 then
   begin
     for i := 0 to max0 - 1 do
     begin
-      display_imgFromSurface(HUIKUANG_PIC, 9, 48 + 27 * i);
+      display_imgFromSurface(HUIKUANG_PIC.pic, 9, 48 + 27 * i);
       DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 50 + 27 * i,18, ColColor(112));
       if teamlist[i] = rnum then
       begin
-        display_imgFromSurface(HUANGKUANG_PIC, 10, 48 + 1 + 27 * i);
+        display_imgFromSurface(HUANGKUANG_PIC.pic, 10, 48 + 1 + 27 * i);
         DrawText(screen,@menuString[i][1], 10 + 39 - 9 * length(menuString[i]), 23,18, ColColor(112));
       end;
     end;
@@ -4003,9 +4003,9 @@ begin
   for i := 0 to 2 do
     DrawText(screen,@strs[i, 1], x - length(strs[i]) * 9 - 5, y + 21 * i,18, ColColor(18));
 
-  display_imgFromSurface(HPLINE_PIC, x + 22, y + 4,0,0,77 * Rrole[rnum].CurrentHP div Rrole[rnum].MaxHP,10);
-  display_imgFromSurface(MPLINE_PIC, x + 22, y + 4 + 21,0,0,77 * Rrole[rnum].CurrentMP div Rrole[rnum].MaxMP,10);
-  display_imgFromSurface(TILILINE_PIC, x + 22, y + 4 + 42,0,0,77 * Rrole[rnum].PhyPower div 100,10);
+  display_imgFromSurface(HPLINE_PIC.pic, x + 22, y + 4,0,0,77 * Rrole[rnum].CurrentHP div Rrole[rnum].MaxHP,10);
+  display_imgFromSurface(MPLINE_PIC.pic, x + 22, y + 4 + 21,0,0,77 * Rrole[rnum].CurrentMP div Rrole[rnum].MaxMP,10);
+  display_imgFromSurface(TILILINE_PIC.pic, x + 22, y + 4 + 42,0,0,77 * Rrole[rnum].PhyPower div 100,10);
   //生命值, 在受伤和中毒值不同时使用不同颜色
   case Rrole[rnum].Hurt of
     34..66:
@@ -4590,8 +4590,8 @@ var
   needmp, needprogress: WideString;
 begin
 
-  display_imgFromSurface(MAGIC_PIC, 358, 35, 358, 35, screen.w - 358, screen.h - 35);
-  display_imgFromSurface(MAGIC_PIC, 138, 300, 138, 300, 358 - 138,screen.h - 300);
+  display_imgFromSurface(MAGIC_PIC.pic, 358, 35, 358, 35, screen.w - 358, screen.h - 35);
+  display_imgFromSurface(MAGIC_PIC.pic, 138, 300, 138, 300, 358 - 138,screen.h - 300);
   skillstr[0] := '醫療';
   skillstr[1] := '解毒';
   skillstr[2] := '用毒';
@@ -4603,7 +4603,7 @@ begin
   knowmagic := '武技';
   smagic := '配置武功';
   DrawText(screen,@knowmagic[1], 360, 162, ColColor(34));
-  display_imgFromSurface(BIAOTIKUANG_PIC, 450, 88);
+  display_imgFromSurface(BIAOTIKUANG_PIC.pic, 450, 88);
   if num = 6 then DrawText(screen,@smagic[1], 454, 90,18, ColColor(63))
   else DrawText(screen,@smagic[1], 454, 90,18, ColColor(34));
 
@@ -4970,7 +4970,7 @@ begin
     end
     else break;
   end;
-  display_imgFromSurface(MAGIC_PIC, x, y, x, y, 476 + len * 11, 408);
+  display_imgFromSurface(MAGIC_PIC.pic, x, y, x, y, 476 + len * 11, 408);
   str := '————選擇隊友————';
   DrawShadowText(@str[1], x, y, ColColor($21), ColColor($23));
   ;
@@ -5038,7 +5038,7 @@ begin
             if menu >= 0 then
             begin
               EffectMedcine(rnum, role2);
-              display_imgFromSurface(MAGIC_PIC, x + 18, y + 20, x + 18, y + 20, 305, 68);
+              display_imgFromSurface(MAGIC_PIC.pic, x + 18, y + 20, x + 18, y + 20, 305, 68);
               UpdateHpMp2(rnum, x, y);
               ShowMedcine(rnum, menu);
               SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
@@ -5747,9 +5747,9 @@ begin
   end;
 
   if (position = 0) or (position = 2) or (position = 3) then
-    display_imgFromSurface(DUIWU_XUANZHEKUANG2_PIC, 180, 51 + TeamListNum * 29);
+    display_imgFromSurface(DUIWU_XUANZHEKUANG2_PIC.pic, 180, 51 + TeamListNum * 29);
   if (position = 1) or (position = 2) or (position = 4) then
-    display_imgFromSurface(DUIWU_XUANZHEKUANG1_PIC,452 + 81 * (RoleListNum mod 2), 96 + (RoleListNum div 2) * 29);
+    display_imgFromSurface(DUIWU_XUANZHEKUANG1_PIC.pic,452 + 81 * (RoleListNum mod 2), 96 + (RoleListNum div 2) * 29);
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
 end;
 
@@ -5958,16 +5958,16 @@ begin
   max0 := length(menuString) - 1;
 
   display_imgFromSurface(MENUITEM_PIC, 0, 0);
-  display_imgFromSurface(WORD_WUPIN_PIC, 285, 3);
+  display_imgFromSurface(WORD_WUPIN_PIC.pic, 285, 3);
   drawroll(125 + 15,21,404,20,max0,0);
-  display_imgFromSurface(BIAOTIKUANG3_PIC, 9, 21);
+  display_imgFromSurface(BIAOTIKUANG3_PIC.pic, 9, 21);
   for i := 0 to max0 do
   begin
-    display_imgFromSurface(HUIKUANG3_PIC, 9, 48 + 27 * i);
+    display_imgFromSurface(HUIKUANG3_PIC.pic, 9, 48 + 27 * i);
     DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 50 + 27 * i,18, ColColor(112));
     if I = MENU then
     begin
-      display_imgFromSurface(HUANGKUANG3_PIC, 10, 48 + 1 + 27 * i);
+      display_imgFromSurface(HUANGKUANG3_PIC.pic, 10, 48 + 1 + 27 * i);
       DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 23,18, ColColor(112));
     end;
   end;
@@ -5993,16 +5993,16 @@ begin
   max0 := length(menuString) - 1;
 
   display_imgFromSurface(MENUITEM_PIC, 0, 0);
-  display_imgFromSurface(WORD_WUPIN_PIC, 285, 3);
+  display_imgFromSurface(WORD_WUPIN_PIC.pic, 285, 3);
   drawroll(125 + 15,21,404,20,max0,0);
-  display_imgFromSurface(BIAOTIKUANG3_PIC, 9, 21);
+  display_imgFromSurface(BIAOTIKUANG3_PIC.pic, 9, 21);
   for i := 0 to max0 do
   begin
-    display_imgFromSurface(HUIKUANG3_PIC, 9, 48 + 27 * i);
+    display_imgFromSurface(HUIKUANG3_PIC.pic, 9, 48 + 27 * i);
     DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 50 + 27 * i,18, ColColor(112));
     if I = MENU then
     begin
-      display_imgFromSurface(HUANGKUANG3_PIC, 10, 48 + 1 + 27 * i);
+      display_imgFromSurface(HUANGKUANG3_PIC.pic, 10, 48 + 1 + 27 * i);
       DrawText(screen,@menuString[i][1], 10 + 54 - 9 * length(menuString[i]), 23,18, ColColor(112));
     end;
   end;

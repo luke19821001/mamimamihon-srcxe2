@@ -99,7 +99,7 @@ begin
   inc(a,F(b, c, d) + x + ac);
   rot(a, s);
 
-  //inc(a,b);
+  inc(a,b);
 end;
 
 procedure GG(var a: cardinal; b, c, d, x: cardinal; s: BYTE; ac: cardinal);

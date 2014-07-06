@@ -386,7 +386,7 @@ begin
       if Music[MusicNum] <> 0 then
       begin
         // BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
-        if (nowmusic > -1) and (nowmusic < 1000) then
+        if (MusicNum > -1) and (MusicNum < 1000) then
         begin
           BASS_ChannelStop(Music[nowmusic]);
           BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);

@@ -1268,10 +1268,8 @@ begin
   begin
     if GRPMD5_l[i] <> GRPMD5[i] then
     begin
-      note := '∂¡µµ' + IntToStr(num);
-      note := note + ' ±º‡≤‚£∫‘§¥Ê£∫';
-      note := note + strpas(pansichar(@GRPMD5)) + 'º∆À„£∫';
-      note := note + strpas(pansichar(@GRPMD5_l));
+      note := '∂¡µµ' + IntToStr(num) + ' ±º‡≤‚£∫' + '/n‘§¥Ê£∫' + widestring(@GRPMD5) +
+        '/nº∆À„£∫' + widestring(@GRPMD5_l);
       filename := 'cheating.txt';
       grp := filecreate(filename);
       fileclose(grp);
