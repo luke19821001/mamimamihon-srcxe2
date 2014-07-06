@@ -4,6 +4,7 @@ program In_stories;
 // {$APPTYPE console}
 
 uses
+  CheckMem in 'lib\CheckMem.pas',
   Forms,
   kys_type in 'kys_type.pas',
   kys_main in 'kys_main.pas',
@@ -25,6 +26,7 @@ uses
   moduleloader in 'lib\moduleloader.pas',
   MD5 in 'lib\MD5.pas',
   xVideo in 'lib\xVideo.pas';
+
 
 // {$R kys_promise.res}
 {$R *.res}

@@ -3,7 +3,7 @@
 			<ProjectGuid>{FBA1E5FB-1514-4B8A-8A02-50680A84E12B}</ProjectGuid>
 			<MainSource>In_stories.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">发布</Config>
+			<Config Condition="'$(Config)'==''">调试</Config>
 			<TargetedPlatforms>1</TargetedPlatforms>
 			<AppType>Application</AppType>
 			<FrameworkType>VCL</FrameworkType>
@@ -75,7 +75,6 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
 			<DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
-			<DCC_RangeChecking>true</DCC_RangeChecking>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<DCC_MaxStackSize>10485760</DCC_MaxStackSize>
 			<VerInfo_Locale>1033</VerInfo_Locale>

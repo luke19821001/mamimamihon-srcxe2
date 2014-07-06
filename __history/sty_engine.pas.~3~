@@ -1911,16 +1911,14 @@ begin
 
   writeln(debugfile, '计算人物强度：' + IntToStr(rnum));
   flush(debugfile);
-  setlength(tgongti, 30);
-  setlength(tgtlev, 30);
-  setlength(tmagic, 30);
-  setlength(tmlev, 30);
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
+      setlength(tgongti, k1 + 1);
+      setlength(tgtlev, k1 + 1);
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -1929,6 +1927,8 @@ begin
     end
     else
     begin
+      setlength(tmagic, k2 + 1);
+      setlength(tmlev, k2 + 1);
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -1938,8 +1938,6 @@ begin
   end;
   if k1 > 0 then
   begin
-    setlength(tmag, 30);
-    setlength(tlev, 30);
     for i := 0 to k1 - 1 do
     begin
       value := Rmagic[tgongti[i]].AddHP[tgtlev[i]] * 2 + Rmagic[tgongti[i]]
@@ -1997,7 +1995,9 @@ begin
               writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
                + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               flush(debugfile);
+              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
+              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2054,17 +2054,14 @@ begin
   setgongti(rnum, 0);
   writeln(debugfile, '清除功体：' + IntToStr(rnum));
   flush(debugfile);
-  setlength(tgongti, 30);
-  setlength(tgtlev, 30);
-  setlength(tmagic, 30);
-  setlength(tmlev, 30);
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
-
+      setlength(tgongti, k1 + 1);
+      setlength(tgtlev, k1 + 1);
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -2073,7 +2070,8 @@ begin
     end
     else
     begin
-
+      setlength(tmagic, k2 + 1);
+      setlength(tmlev, k2 + 1);
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -2118,8 +2116,6 @@ begin
         value := value + 1000;
       value := round(power(value, 1.4));
       k3 := 0;
-      setlength(tmag, 30);
-      setlength(tlev, 30);
       //writeln(debugfile, '内功总分：' + IntToStr(round(value))) ;
       //flush(debugfile);
       if k2 > 0 then
@@ -2141,7 +2137,9 @@ begin
               //writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
               // + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               //flush(debugfile);
+              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
+              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2177,14 +2175,13 @@ end;
 
 procedure magicsort(var mag, lev: array of integer);
 var
-  i, j, key1, key2 ,len: integer;
+  i, j, key1, key2: integer;
 begin
-  len:=length(mag);
-  for i := len - 2 downto 0 do
+  for i := length(mag) - 2 downto 0 do
   begin
     key1 := mag[i];
     key2 := lev[i];
-    for j := i + 1 to len - 1 do
+    for j := i + 1 to length(mag) - 1 do
     begin
       if countmagvalue(mag[j], lev[j]) > countmagvalue(key1, key2) then
       begin
@@ -3265,17 +3262,14 @@ begin
               if (random(jgzhanli * Rmenpai[i].kzq) > (fyzhanli * 150)) and
                 (max0 > 0) then
               begin
-                kg:=-1;
                 for i3 := 0 to 19 do
                 begin
+                  kg := i3;
                   if mpbdata[i3].key < 0 then
-                  begin
-                    kg := i3;
                     break;
-                  end;
                 end;
                 i3:=kg;
-                if (i3 < 0) or (i3 > 19) then
+                if i3 > 19 then
                 begin
                   break;
                 end;

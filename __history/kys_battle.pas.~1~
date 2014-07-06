@@ -1553,13 +1553,10 @@ begin
   ReArrangeBRole;
   Bx := Brole[0].X;
   By := Brole[0].Y;
-  for i := 0 to 2 do
+  for i := 0 to 5 do
   begin
-    for i1:=0 to 1 do
-    begin
-      zy0[i][i1] := -1;
-      zy1[i][i1] := -1;
-    end;
+    zy0[0][i] := -1;
+    zy1[0][i] := -1;
   end;
   zyid:=-1;
   jiqicount := 0;
@@ -4404,7 +4401,6 @@ begin
             if rst >= 0 then
             begin
               p := 0;
-              kg:=-1;
               for j := 0 to 9 do
               begin
                 kg:=j;
@@ -6338,7 +6334,6 @@ var
   i, rnum, basicvalue1, basicvalue2, amount1, amount2, levels1, levels2: integer;
   add1, additem1, add2, additem2, zhiwujc6, mpnum,tmp:integer;
   str: WideString;
-  tmpe:uint16;
 begin
   levels1 := 0;
   amount1 := 0;
@@ -6397,10 +6392,10 @@ begin
           add1 := trunc(basicvalue1 * 1.5);
           additem1 := trunc(basicvalue1 * 1.5);
         end;
-        tmpe:= Rrole[rnum].Exp;
+        tmp:= Rrole[rnum].Exp;
         Rrole[rnum].Exp := Rrole[rnum].Exp + add1 * (100 + zhiwujc6) div 100;
         Rrole[rnum].Exp := min(Rrole[rnum].Exp, 35000);
-        Rrole_a[rnum].Exp := uint16(Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmpe);
+        Rrole_a[rnum].Exp := Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmp;
         //if not ((Rrole[rnum].PracticeBook >= 0) and (ritem[Rrole[rnum].PracticeBook].Magic >= 0) and (rmagic[ritem[Rrole[rnum].PracticeBook].Magic].MagicType = 5)) then
         //Rrole[rnum].GongtiExam := Rrole[rnum].GongtiExam + add1 * 2 *(100+zhiwujc6)div 500;
         //Rrole[rnum].GongtiExam := min(Rrole[rnum].GongtiExam, 50000);
@@ -6468,10 +6463,10 @@ begin
           add2 := trunc(basicvalue2 * 1.5);
           additem2 := trunc(basicvalue2 * 1.5);
         end;
-        tmpe:= Rrole[rnum].Exp;
+        tmp:= Rrole[rnum].Exp;
         Rrole[rnum].Exp := Rrole[rnum].Exp + add2;
         Rrole[rnum].Exp := min(Rrole[rnum].Exp, 35000);
-        Rrole_a[rnum].Exp := uint16(Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmpe);
+        Rrole_a[rnum].Exp := Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmp;
         //if not ((Rrole[rnum].PracticeBook >= 0) and (ritem[Rrole[rnum].PracticeBook].Magic >= 0) and (rmagic[ritem[Rrole[rnum].PracticeBook].Magic].MagicType = 5)) then
         //Rrole[rnum].GongtiExam := Rrole[rnum].GongtiExam + add2 * 2 div 5;
         //Rrole[rnum].GongtiExam := min(Rrole[rnum].GongtiExam, 50000);
@@ -6499,8 +6494,8 @@ begin
       while (Rrole[rnum].Level < MAX_LEVEL) and (uint16(Rrole[rnum].Exp) >=
           uint16(LevelUplist[Rrole[rnum].Level - 1])) do
       begin
-        Rrole_a[rnum].Exp := uint16(Rrole_a[rnum].Exp - LevelUplist[Rrole[rnum].Level - 1]);
-        Rrole[rnum].Exp := uint16(Rrole[rnum].Exp - LevelUplist[Rrole[rnum].Level - 1]);
+        Rrole_a[rnum].Exp := Rrole_a[rnum].Exp - LevelUplist[Rrole[rnum].Level - 1];
+        Rrole[rnum].Exp := Rrole[rnum].Exp - LevelUplist[Rrole[rnum].Level - 1];
         Rrole[rnum].Level := Rrole[rnum].Level + 1;
         if Brole[i].Team = 0 then
           LevelUp(i)
@@ -11151,7 +11146,6 @@ begin
       begin
         lwnum := random(nnum);
         p := 0;
-        kg:=0;
         for i1 := 0 to nolw do
         begin
           kg :=i1;

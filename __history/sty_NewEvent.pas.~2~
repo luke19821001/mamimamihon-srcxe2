@@ -7059,20 +7059,14 @@ end;
 
 function menpaibattle(snum, mpnum1, mpnum2, jump1, jump2: integer): integer;
 var
-  mods, i , kg: integer;
+  mods, i: integer;
 begin
 
   Result := jump2;
-  kg:=-1;
+
   for i := 0 to 19 do
-  begin
     if mpbdata[i].key < 0 then
-    begin
-      kg:=i;
       break;
-    end;
-  end;
-  i:=kg;
   mpbdata[i].key := 1;
   mpbdata[i].ID := i;
   mpbdata[i].daytime := -1;
@@ -8042,7 +8036,6 @@ begin
   alen := length(p1);
   setlength(actorarray, alen + 2);
   ap := @actorarray[0];
-  kg:=-1;
   for n := 0 to alen - 1 do
   begin
     kg := n;
@@ -9210,7 +9203,6 @@ begin
   namelen := length(Rrole[rnum].Name) + 2;
   setlength(namearray, namelen);
   np := @namearray[0];
-  kg:=-1;
   for n := 0 to namelen - 3 do
   begin
     kg :=n;
@@ -9235,7 +9227,6 @@ begin
   writeln(debugfile, 'p1:' + p1 + ' alen:' + IntToStr(alen));
   flush(debugfile);
   ap := @actorarray[0];
-  kg:=-1;
   for n := 0 to alen - 1 do
   begin
     kg :=n;
@@ -9452,7 +9443,6 @@ begin
             alen := length(pp1);
             setlength(actorarray1, alen + 2);
             app := @actorarray1[0];
-            kg:=-1;
             for n := 0 to alen - 1 do
             begin
               kg :=n;
@@ -9720,17 +9710,14 @@ begin
               if commonmenu22(CENTER_X - 110, y + 40, 220) = 0 then
               begin
                 Result := True;
-                kg:=-1;
                 for i := 0 to 19 do
                 begin
+                  kg:=i;
                   if mpbdata[i].key < 0 then
-                  begin
-                    kg:=i;
                     break;
-                  end;
                 end;
                 i:=kg;
-                if (i > 19) or (i<0) then
+                if i > 19 then
                 begin
                   str := '‘ðˆö³¬ÏÞ';
                   Result := False;
@@ -9828,19 +9815,14 @@ begin
               if commonmenu22(CENTER_X - 110, y + 40, 220) = 0 then
               begin
                 Result := True;
-                kg:=-1;
                 for i := 0 to 19 do
                 begin
-
+                  kg:=i;
                   if mpbdata[i].key < 0 then
-                  begin
-                    kg:=i;
                     break;
-                  end;
-
                 end;
                 i:=kg;
-                if (i > 19) or (i < 0) then
+                if i > 19 then
                 begin
                   str := '‘ðˆö³¬ÏÞ';
                   Result := False;
@@ -10447,18 +10429,14 @@ var
   str: WideString;
   kg:integer;
 begin
-  kg:=-1;
   for i := 0 to 19 do
   begin
-
+    kg:=i;
     if mpbdata[i].key < 0 then
-    begin
-      kg:=i;
       break;
-    end;
   end;
   i:=kg;
-  if (i > 19) or (i < 0) then
+  if i > 19 then
   begin
     str := '‘ðˆö³¬ÏÞ';
     Redraw;

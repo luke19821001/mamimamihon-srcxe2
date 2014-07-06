@@ -377,7 +377,7 @@ var
   repeatable: boolean;
   // nowmusic: HSTREAM;
 begin
-  if times = -1 then
+  {if times = -1 then
     repeatable := True
   else
     repeatable := False;
@@ -407,7 +407,7 @@ begin
       end;
   finally
 
-  end;
+  end;}
 
 end;
 

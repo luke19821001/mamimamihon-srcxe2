@@ -1553,13 +1553,10 @@ begin
   ReArrangeBRole;
   Bx := Brole[0].X;
   By := Brole[0].Y;
-  for i := 0 to 2 do
+  for i := 0 to 5 do
   begin
-    for i1:=0 to 1 do
-    begin
-      zy0[i][i1] := -1;
-      zy1[i][i1] := -1;
-    end;
+    zy0[0][i] := -1;
+    zy1[0][i] := -1;
   end;
   zyid:=-1;
   jiqicount := 0;
@@ -4404,7 +4401,6 @@ begin
             if rst >= 0 then
             begin
               p := 0;
-              kg:=-1;
               for j := 0 to 9 do
               begin
                 kg:=j;
@@ -11151,7 +11147,6 @@ begin
       begin
         lwnum := random(nnum);
         p := 0;
-        kg:=0;
         for i1 := 0 to nolw do
         begin
           kg :=i1;

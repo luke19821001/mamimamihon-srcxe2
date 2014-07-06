@@ -126,16 +126,16 @@ procedure DrawBFieldWithAction(f, bnum, Apicnum: integer);
 // KG新增的函数
 procedure InitNewPic(num, px, py, x, y, w, h: integer; mask: integer = 0);
 procedure display_img(file_name: pAnsiChar; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y: integer); overload;
 function GetPngPic(filename: AnsiString; num: integer): Tpic; overload;
 function GetPngPic(f: integer; num: integer): Tpic; overload;
-procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
-procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 function ReadPicFromByte(p_byte: PByte; size: integer): PSDL_Surface;
@@ -148,7 +148,7 @@ function RoLforUint16(a, n: uint16): uint16; // 循环右移N位
 function RoRforByte(a: byte; n: uint16): byte; // 循环左移N位
 function RoLforByte(a: byte; n: uint16): byte; // 循环右移N位
 procedure DrawEftPic(Pic: Tpic; px, py, level: integer);
-procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
 procedure ZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer);overload;
 function GetZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer): PSDL_Surface;
 function UnicodeToGBK(str: pWideChar): AnsiString;
@@ -722,7 +722,7 @@ begin
     SDL_FreeSurface(Image);
   end;
 end;
-procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
 var
   grp:integer;
 begin
@@ -735,7 +735,7 @@ begin
   end;
   display_imgFromSurface(Image.pic, x, y, x1, y1, w, h);
 end;
-procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
 var
   grp:integer;
 begin
@@ -3164,7 +3164,7 @@ begin
   Result.Pic := ReadPicFromByte(@Data[0], len);
   FileClose(f);
 end;
-procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3177,7 +3177,7 @@ begin
   end;
   drawPngPic(Image.pic, 0, 0, Image.Pic.pic.w, Image.Pic.pic.h, px, py, mask, maskvalue);
 end;
-procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3439,7 +3439,7 @@ begin
   SDL_FreeSurface(pic1.Pic);
 end;
 
-procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
 var
   grp:integer;
   a, b: double;

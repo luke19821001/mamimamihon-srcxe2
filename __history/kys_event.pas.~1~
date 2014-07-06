@@ -2434,7 +2434,6 @@ begin
           3:
             p1 := @Rmagic[e3].Name;
         end;
-        kg:=-1;
         for i := 0 to 19 do
         begin
           (p + i)^ := (p1 + i)^;
@@ -3772,7 +3771,6 @@ begin
   alen := length(p1);
   setlength(actorarray, alen + 2);
   ap := @actorarray[0];
-  kg:=-1;
   for n := 0 to alen - 1 do
   begin
     (ap + n)^ := (p1 + n)^;
@@ -4077,7 +4075,6 @@ begin
             alen := length(pp1);
             setlength(actorarray1, alen + 2);
             app := @actorarray1[0];
-            kg:=-1;
             for n := 0 to alen - 1 do
             begin
               (app + n)^ := (pp1 + n)^;
@@ -4238,7 +4235,7 @@ begin
     4:
       p := @Ritem[inum].Introduction; // 物品说明
   end;
-  kg:=-1;
+
   for i := 0 to len - 1 do
   begin
     kg :=i;
@@ -4334,7 +4331,6 @@ begin
   alen := length(p1);
   setlength(actorarray, alen + 2);
   ap := @actorarray[0];
-  kg:=-1;
   for n := 0 to alen - 1 do
   begin
     kg:=n;
@@ -4629,7 +4625,6 @@ begin
             alen := length(pp1);
             setlength(actorarray1, alen + 2);
             app := @actorarray1[0];
-            kg:=-1;
             for n := 0 to alen - 1 do
             begin
               kg:=n;

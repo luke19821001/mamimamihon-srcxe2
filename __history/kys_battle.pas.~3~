@@ -4404,7 +4404,6 @@ begin
             if rst >= 0 then
             begin
               p := 0;
-              kg:=-1;
               for j := 0 to 9 do
               begin
                 kg:=j;
@@ -11151,7 +11150,6 @@ begin
       begin
         lwnum := random(nnum);
         p := 0;
-        kg:=0;
         for i1 := 0 to nolw do
         begin
           kg :=i1;
