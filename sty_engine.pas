@@ -45,7 +45,7 @@ function mpzyjc(mpnum: integer): integer;
 procedure aotosetmagic(rnum: integer);
 function RoleValue(rnum,mods: integer): integer;
 // 武功排序
-procedure magicsort(var mag, lev: array of integer);
+procedure magicsort(var mag, lev: array of integer;len:integer);
 // 計算武功強度值
 function countmagvalue(mnum, mlev: integer): integer;
 // 選擇製造物品
@@ -502,8 +502,11 @@ begin
         (t >= DData[i, j, 11]) and (DData[i, j, 12] > 0) and
         (DData[i, j, 15] = 0) then
       begin
-        writeln(debugfile, '对话开关' + IntToStr(DData[i, j, 0] div 10));
-        flush(debugfile);
+        if (debug = 1) then
+        begin
+          writeln(debugfile, '对话开关' + IntToStr(DData[i, j, 0] div 10));
+          flush(debugfile);
+        end;
         if DData[i, j, 13] > 0 then
         begin
           if ((t - DData[i, j, 11]) mod DData[i, j, 13]) = DData[i, j, 12] then
@@ -524,9 +527,12 @@ begin
     begin
       if songli[i][2] = t then
       begin
-        writeln(debugfile, IntToStr(songli[i][0]) + '送礼' +
-          IntToStr(songli[i][1]));
-        flush(debugfile);
+        if (debug = 1) then
+        begin
+          writeln(debugfile, IntToStr(songli[i][0]) + '送礼' +
+           IntToStr(songli[i][1]));
+          flush(debugfile);
+        end;
         add1 := random(50) + 50;
         str := gbktounicode(@Rmenpai[songli[i][0]].Name) + '向' +
           gbktounicode(@Rmenpai[songli[i][1]].Name) + '送禮，兩家關係增加' +
@@ -550,7 +556,7 @@ begin
       begin
         if (t = mpbdata[i].daytime) then
         begin
-          //if (debug = 1) then
+          if (debug = 1) then
           begin
             writeln(debugfile, IntToStr(mpbdata[i].attmp) + '开战' +
               IntToStr(mpbdata[i].defmp));
@@ -584,7 +590,7 @@ begin
           (mpbdata[i].defmp <> Rrole[0].MenPai)) or
           (Rrole[0].weizhi <> mpbdata[i].snum) then
         begin
-          //if (debug = 1) then
+          if (debug = 1) then
           begin
             writeln(debugfile, 'AI自动战斗' + IntToStr(i));
             flush(debugfile);
@@ -599,7 +605,7 @@ begin
     if (TimeTrigger.adds[i].types = 0) and
       (TimeTrigger.adds[i].stime + TimeTrigger.adds[i].dtime <= t) then
     begin
-      //if (debug = 1) then
+      if (debug = 1) then
       begin
         writeln(debugfile, '删除事件' + IntToStr(i));
         flush(debugfile);
@@ -610,7 +616,7 @@ begin
       ((TimeTrigger.adds[i].endtime = 0) or (t < TimeTrigger.adds[i].endtime))
       and (t = TimeTrigger.adds[i].stime) then
     begin
-      //if (debug = 1) then
+      if (debug = 1) then
       begin
         writeln(debugfile, '调用时间事件' + IntToStr(i) + ':' +
           IntToStr(TimeTrigger.adds[i].event));
@@ -725,7 +731,7 @@ begin
         tmpe := Rrole[i].exp;
         Inc(Rrole[i].exp, round((Rrole[i].level * 2 + 20) * (100 + random(100))
           * (100 + zhiwujc6) / 25000));
-        Rrole[i].exp := min(Rrole[i].exp, 35000);
+        Rrole[i].exp := min(Rrole[i].exp, 30000);
         Rrole_a[i].exp := uint16(Rrole_a[i].exp + Rrole[i].exp - tmpe);
         tmp0 := Rrole[i].ExpForBook;
         Inc(Rrole[i].ExpForBook,
@@ -893,7 +899,7 @@ begin
             tmpe := Rrole[i].exp;
             Inc(Rrole[i].exp, round((Rrole[i].level * 4 + 40) *
               (100 + random(100)) * (100 + zhiwujc6) / 25000));
-            Rrole[i].exp := min(Rrole[i].exp, 35000);
+            Rrole[i].exp := min(Rrole[i].exp, 30000);
             Rrole_a[i].exp := uint16(Rrole_a[i].exp + Rrole[i].exp - tmpe);
           end
           else
@@ -1220,7 +1226,7 @@ begin
       db4 := db1 * db2 * db3 / 250000000;
       tmpe := Rrole[i].exp;
       Inc(Rrole[i].exp, round(db4));
-      Rrole[i].exp := min(Rrole[i].exp, 35000);
+      Rrole[i].exp := min(Rrole[i].exp, 30000);
       while (Rrole[i].level < MAX_LEVEL) and
         (uint16(Rrole[i].exp) >= uint16(LevelUplist[Rrole[i].level - 1])) do
       begin
@@ -1898,7 +1904,7 @@ end;
 function RoleValue(rnum,mods: integer): integer;
 var
   i, i1, i2, j, k, n, k1, k2, k3, mpnum, tgt: integer;
-  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array of integer;
+  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array[0..30] of integer;
   value, tvalue, MaxValue: double;
 begin
   Result := 0;
@@ -1908,13 +1914,11 @@ begin
   MaxValue := 0;
   tgt := 0;
   mpnum := Rrole[rnum].MenPai;
-
-  writeln(debugfile, '计算人物强度：' + IntToStr(rnum));
-  flush(debugfile);
-  setlength(tgongti, 30);
-  setlength(tgtlev, 30);
-  setlength(tmagic, 30);
-  setlength(tmlev, 30);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '计算人物强度：' + IntToStr(rnum));
+    flush(debugfile);
+  end;
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
@@ -1923,23 +1927,27 @@ begin
     begin
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
-      writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
-      flush(debugfile);
+      if (debug = 1) then
+      begin
+        writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
+        flush(debugfile);
+      end;
       Inc(k1);
     end
     else
     begin
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
-      writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
-      flush(debugfile);
+      if (debug = 1) then
+      begin
+        writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
+        flush(debugfile);
+      end;
       Inc(k2);
     end;
   end;
   if k1 > 0 then
   begin
-    setlength(tmag, 30);
-    setlength(tlev, 30);
     for i := 0 to k1 - 1 do
     begin
       value := Rmagic[tgongti[i]].AddHP[tgtlev[i]] * 2 + Rmagic[tgongti[i]]
@@ -1951,8 +1959,11 @@ begin
         .AddDefPoi * 5 + Rmagic[tgongti[i]].AddFist * 5 + Rmagic[tgongti[i]]
         .AddSword * 5 + Rmagic[tgongti[i]].AddKnife * 5 + Rmagic[tgongti[i]]
         .AddUnusual * 5 + Rmagic[tgongti[i]].AddHidWeapon * 5;
-      writeln(debugfile, '内功基础分：' + IntToStr(round(value))) ;
-      flush(debugfile);
+      if (debug = 1) then
+      begin
+        writeln(debugfile, '内功基础分：' + IntToStr(round(value))) ;
+        flush(debugfile);
+      end;
       for i1 := 0 to 9 do
       begin
         if (Rmagic[tgongti[i]].MoveDistance[i1] >= 40) and
@@ -1976,8 +1987,11 @@ begin
       if mods <> 1 then
         value := round(power(value, 1.4));
       k3 := 0;
-      writeln(debugfile, '内功总分：' + IntToStr(round(value))) ;
-      flush(debugfile);
+      if (debug = 1) then
+      begin
+        writeln(debugfile, '内功总分：' + IntToStr(round(value))) ;
+        flush(debugfile);
+      end;
       if k2 > 0 then
       begin
         for i1 := 0 to k2 - 1 do
@@ -1994,9 +2008,12 @@ begin
               ((Rmagic[tmagic[i1]].teshumod[i2] = 0) or
               (Rmagic[tmagic[i1]].teshumod[i2] = mpnum))) then
             begin
-              writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
-               + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
-              flush(debugfile);
+              if (debug = 1) then
+              begin
+                writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
+                 + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
+                flush(debugfile);
+              end;
               tmag[k3] := tmagic[i1];
               tlev[k3] := tmlev[i1];
               Inc(k3);
@@ -2007,9 +2024,12 @@ begin
       end;
       if k3 > 0 then
       begin
-        writeln(debugfile, '外功排序') ;
-        flush(debugfile);
-        magicsort(tmag, tlev);
+        if (debug = 1) then
+        begin
+          writeln(debugfile, '外功排序') ;
+          flush(debugfile);
+        end;
+        magicsort(tmag, tlev,k3-1);
         for i1 := 0 to min(k3 - 1, 9) do
         begin
           value := value + countmagvalue(tmag[i1], tlev[i1]);
@@ -2017,8 +2037,11 @@ begin
       end
       else if k2 > 0 then
         value := 0;
-      writeln(debugfile, '内外功总分：' + IntToStr(round(value))) ;
-      flush(debugfile);
+      if (debug = 1) then
+      begin
+        writeln(debugfile, '内外功总分：' + IntToStr(round(value))) ;
+        flush(debugfile);
+      end;
       if value > tvalue then
       begin
         tvalue := value;
@@ -2028,7 +2051,7 @@ begin
   end
   else if k2 > 0 then
   begin
-    magicsort(tmagic, tmlev);
+    magicsort(tmagic, tmlev,k2-1);
     tvalue := 0;
     for i1 := 0 to min(k2 - 1, 9) do
     begin
@@ -2042,7 +2065,7 @@ end;
 procedure aotosetmagic(rnum: integer);
 var
   i, i1, i2, j, k, n, k1, k2, k3, mpnum, tgt: integer;
-  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array of integer;
+  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array[0..30] of integer;
   value, tvalue, MaxValue: double;
 begin
   k1 := 0;
@@ -2052,12 +2075,11 @@ begin
   tgt := 0;
   mpnum := Rrole[rnum].MenPai;
   setgongti(rnum, 0);
-  writeln(debugfile, '清除功体：' + IntToStr(rnum));
-  flush(debugfile);
-  setlength(tgongti, 30);
-  setlength(tgtlev, 30);
-  setlength(tmagic, 30);
-  setlength(tmlev, 30);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '清除功体：' + IntToStr(rnum));
+    flush(debugfile);
+  end;
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
@@ -2118,8 +2140,6 @@ begin
         value := value + 1000;
       value := round(power(value, 1.4));
       k3 := 0;
-      setlength(tmag, 30);
-      setlength(tlev, 30);
       //writeln(debugfile, '内功总分：' + IntToStr(round(value))) ;
       //flush(debugfile);
       if k2 > 0 then
@@ -2153,7 +2173,7 @@ begin
       begin
         //writeln(debugfile, '外功排序') ;
         //flush(debugfile);
-        magicsort(tmag, tlev);
+        magicsort(tmag, tlev,k3-1);
         for i1 := 0 to min(k3 - 1, 9) do
         begin
           value := value + countmagvalue(tmag[i1], tlev[i1]);
@@ -2175,11 +2195,10 @@ end;
 
 // 武功排序
 
-procedure magicsort(var mag, lev: array of integer);
+procedure magicsort(var mag, lev: array of integer;len:integer);
 var
-  i, j, key1, key2 ,len: integer;
+  i, j, key1, key2 : integer;
 begin
-  len:=length(mag);
   for i := len - 2 downto 0 do
   begin
     key1 := mag[i];
@@ -2446,24 +2465,18 @@ begin
   if (tipsstring <> '') and (Showtips.num < 5) then
   begin
     Inc(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
     Showtips.str[Showtips.num - 1] := tipsstring;
-    setlength(Showtips.x, Showtips.num);
     Showtips.x[Showtips.num - 1] := CENTER_X * 2 + 50;
-    setlength(Showtips.y, Showtips.num);
     if Showtips.num > 1 then
       Showtips.y[Showtips.num - 1] := Showtips.y[Showtips.num - 2]
     else
       Showtips.y[Showtips.num - 1] := CENTER_Y * 2 - 40;
-    setlength(Showtips.yadd, Showtips.num);
     Showtips.yadd[Showtips.num - 1] := Showtips.y[Showtips.num - 1];
     for i := Showtips.num - 2 downto 0 do
     begin
       Showtips.yadd[i] := Showtips.yadd[i + 1] - 25;
     end;
-    setlength(Showtips.SurCreated, Showtips.num);
     Showtips.SurCreated[Showtips.num - 1] := false;
-    setlength(Showtips.Sur, Showtips.num);
   end;
 end;
 
@@ -2477,7 +2490,7 @@ begin
   begin
     Showtips.str[num] := tipsstring;
     Showtips.x[num] := CENTER_X * 2 + 50;
-    Showtips.SurCreated[i] := false;
+    Showtips.SurCreated[num] := false;
   end
   else if (tipsstring = '') then
   begin
@@ -2494,14 +2507,8 @@ begin
       Showtips.SurCreated[i] := Showtips.SurCreated[i + 1];
       Showtips.sur[i] := Showtips.sur[i + 1];
     end;
+    Showtips.SurCreated[Showtips.num - 1]:=false;
     Dec(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
-    setlength(Showtips.x, Showtips.num);
-    setlength(Showtips.y, Showtips.num);
-    setlength(Showtips.yadd, Showtips.num);
-
-    setlength(Showtips.SurCreated, Showtips.num);
-    setlength(Showtips.Sur, Showtips.num);
     if num > Showtips.num then
     begin
       exit;
@@ -2729,19 +2736,18 @@ begin
           if ((Rmenpai[i].shane > 0) and (Rmenpai[j].shane > 0)) or
             ((Rmenpai[i].shane < 0) and (Rmenpai[j].shane < 0)) then
           begin
-            add1 := 6 - random(abs(Rmenpai[i].shane - Rmenpai[j].shane) * 3);
+            add1 := random(7) - 1 - random(abs(Rmenpai[i].shane - Rmenpai[j].shane) * 3);
             changempgx(i, j, add1);
           end
-          else if (Rmenpai[i].shane <> 0) and (Rmenpai[j].shane <> 0) then
+          else
           begin
-            add1 := random(+(abs(Rmenpai[i].shane - Rmenpai[j].shane) -
-              1) * 2) - 3;
-            changempgx(i, j, -add1);
+            add1 := random(-(abs(Rmenpai[i].shane - Rmenpai[j].shane)) * 3) - 1 + random(7);
+            changempgx(i, j, add1);
           end;
           if random(50000 + 5 * Rmenpai[i].guanxi[j]) <
             (Rmenpai[i].guanxi[j] + 100) then
           begin
-            add1 := random(1 + (abs(Rmenpai[i].shane + Rmenpai[j].shane)) * 3);
+            add1 := random(1 + (abs(Rmenpai[i].shane - Rmenpai[j].shane)) * 3);
             changempgx(i, j, add1);
           end;
         end;
@@ -2753,10 +2759,10 @@ begin
         begin
           if Rmenpai[i].guanxi[j] > -1 then
           begin
-            if random(800 * 300 div (100 + Rmenpai[i].guanxi[j] + k * 300)) < 100
+            if random(800 *((k + 2) * 200) div (100 + Rmenpai[i].guanxi[j])) < 100
             then
             begin
-              add1 := random(50) + 50;
+              add1 := random(50) + 20;
               changempgx(i, j, add1);
               Inc(k);
             end;
@@ -2842,16 +2848,25 @@ end;
 
 procedure initialMPdiaodu;
 var
-  i, i1, i2, i3, i4, len, len0, n, rtotle, gtotle, k, zhiwu: integer;
+  i, i1, i2, i3, i4, len, len0, n,n1,n2, rtotle, gtotle, k, zhiwu: integer;
   tmp: double;
   kg:integer;
 begin
-  //if (debug = 1) then
+  if (debug = 1) then
   begin
     writeln(debugfile, '开始调度');
     flush(debugfile);
   end;
   n := 0;
+  for i := 0 to length(Rmenpai) - 1 do
+  begin
+    if Rmenpai[i].zmr <> 0 then
+    begin
+      inc(n);
+    end;
+  end;
+  setlength(mpdiaodu, n);
+  n:=0;
   for i := 0 to length(Rmenpai) - 1 do
   begin
     if (Rmenpai[i].jvdian > 0) then
@@ -2867,11 +2882,10 @@ begin
       end;
       if Rmenpai[i].zmr <> 0 then
       begin
-        setlength(mpdiaodu, n + 1);
         mpdiaodu[n].mpnum := i;
         mpdiaodu[n].scount := 0;
         mpdiaodu[n].Rcount := 0;
-        //if (debug = 1) then
+        if (debug = 1) then
         begin
           writeln(debugfile, '失落归位完毕' + IntToStr(i));
           flush(debugfile);
@@ -2880,12 +2894,20 @@ begin
         begin
           if Rscene[i1].MenPai = i then
           begin
-            setlength(mpdiaodu[n].sce, mpdiaodu[n].scount + 1);
-            mpdiaodu[n].sce[mpdiaodu[n].scount].snum := i1;
-            mpdiaodu[n].sce[mpdiaodu[n].scount].Count := 0;
-            mpdiaodu[n].sce[mpdiaodu[n].scount].dmenpai := -1;
-            mpdiaodu[n].sce[mpdiaodu[n].scount].dguanxi := 1001;
-            mpdiaodu[n].sce[mpdiaodu[n].scount].dsnum := -1;
+            Inc(mpdiaodu[n].scount);
+          end;
+        end;
+        setlength(mpdiaodu[n].sce, mpdiaodu[n].scount);
+        n1:=0;
+        for i1 := 1 to length(Rscene) - 1 do
+        begin
+          if Rscene[i1].MenPai = i then
+          begin
+            mpdiaodu[n].sce[n1].snum := i1;
+            mpdiaodu[n].sce[n1].Count := 0;
+            mpdiaodu[n].sce[n1].dmenpai := -1;
+            mpdiaodu[n].sce[n1].dguanxi := 1001;
+            mpdiaodu[n].sce[n1].dsnum := -1;
             for i2 := 0 to 9 do
             begin
               if (Rscene[i1].lianjie[i2] < 0) then
@@ -2893,49 +2915,58 @@ begin
               if ((Rscene[Rscene[i1].lianjie[i2]].MenPai = i) or
                 (Rscene[Rscene[i1].lianjie[i2]].MenPai < 0)) then
                 continue;
-              Inc(mpdiaodu[n].sce[mpdiaodu[n].scount].Count);
+              Inc(mpdiaodu[n].sce[n1].Count);
               if Rmenpai[Rscene[Rscene[i1].lianjie[i2]].MenPai].guanxi[i] <
-                mpdiaodu[n].sce[mpdiaodu[n].scount].dguanxi then
+                mpdiaodu[n].sce[n1].dguanxi then
               begin
-                mpdiaodu[n].sce[mpdiaodu[n].scount].dmenpai :=
+                mpdiaodu[n].sce[n1].dmenpai :=
                   Rscene[Rscene[i1].lianjie[i2]].MenPai;
-                mpdiaodu[n].sce[mpdiaodu[n].scount].dguanxi :=
+                mpdiaodu[n].sce[n1].dguanxi :=
                   Rmenpai[Rscene[Rscene[i1].lianjie[i2]].MenPai].guanxi[i];
-                mpdiaodu[n].sce[mpdiaodu[n].scount].dsnum :=
+                mpdiaodu[n].sce[n1].dsnum :=
                   Rscene[i1].lianjie[i2];
-                //if (debug = 1) then
+                if (debug = 1) then
                 begin
                   writeln(debugfile,
-                    '敌对门派：' + IntToStr(mpdiaodu[n].sce[mpdiaodu[n].scount].dmenpai)
-                    + '敌对场景：' + IntToStr(mpdiaodu[n].sce[mpdiaodu[n].scount].dsnum));
+                    '敌对门派：' + IntToStr(mpdiaodu[n].sce[n1].dmenpai)
+                    + '敌对场景：' + IntToStr(mpdiaodu[n].sce[n1].dsnum));
                   flush(debugfile);
                 end;
               end;
             end;
-            Inc(mpdiaodu[n].scount);
+            Inc(n1);
           end;
         end;
+
         for i1 := 1 to length(Rrole) - 1 do
         begin
           if (Rrole[i1].MenPai = i) and (Rrole[i1].dtime < 1000) then
           begin
-            setlength(mpdiaodu[n].rnum, mpdiaodu[n].Rcount + 1);
-            setlength(mpdiaodu[n].isin, mpdiaodu[n].Rcount + 1);
-            mpdiaodu[n].rnum[mpdiaodu[n].Rcount] := i1;
-            mpdiaodu[n].isin[mpdiaodu[n].Rcount] := 0;
-            //if (debug = 1) then
+            Inc(mpdiaodu[n].Rcount);
+          end;
+        end;
+        setlength(mpdiaodu[n].rnum, mpdiaodu[n].Rcount);
+        setlength(mpdiaodu[n].isin, mpdiaodu[n].Rcount);
+        n2:=0;
+        for i1 := 1 to length(Rrole) - 1 do
+        begin
+          if (Rrole[i1].MenPai = i) and (Rrole[i1].dtime < 1000) then
+          begin
+            mpdiaodu[n].rnum[n2] := i1;
+            mpdiaodu[n].isin[n2] := 0;
+            if (debug = 1) then
             begin
               writeln(debugfile, '人员：' + IntToStr(i1));
               flush(debugfile);
             end;
-            Inc(mpdiaodu[n].Rcount);
+            Inc(n2);
           end;
         end;
         Inc(n);
       end;
     end;
   end;
-  //if (debug = 1) then
+  if (debug = 1) then
   begin
     writeln(debugfile, '存活门派：' + IntToStr(n));
     flush(debugfile);
@@ -2956,7 +2987,7 @@ begin
         gtotle := gtotle + ((1200 - mpdiaodu[i].sce[i1].dguanxi) *
           (100 + 10 * (mpdiaodu[i].sce[i1].Count - 1)));
       end;
-      //if (debug = 1) then
+      if (debug = 1) then
       begin
         writeln(debugfile, '总人力：' + IntToStr(rtotle) + '总需求：' + IntToStr(gtotle));
         flush(debugfile);
@@ -3016,7 +3047,7 @@ begin
             end;
             if tmp >= Rrole[mpdiaodu[i].rnum[i3]].level then
             begin
-              //if (debug = 1) then
+              if (debug = 1) then
               begin
                 writeln(debugfile, '调动i3：' + IntToStr(mpdiaodu[i].rnum[i3]) + '到达'
                   + IntToStr(mpdiaodu[i].sce[i1].snum));
@@ -3031,7 +3062,7 @@ begin
           end;
           if (k = 0) and (i2 <= i3) then
           begin
-            //if (debug = 1) then
+            if (debug = 1) then
             begin
               writeln(debugfile, '调动i2：' + IntToStr(mpdiaodu[i].rnum[i2]) + '到达' +
                 IntToStr(mpdiaodu[i].sce[i1].snum));
@@ -3051,11 +3082,11 @@ end;
 
 procedure AIMPBattle;
 var
-  i, i1, i2, i3, i4, len, len0, len1, max0, max1, max2, battle_id: integer;
+  i, i1, i2, i3, i4, len, len0, len1, max0, max1, max2, battle_id, n, n1, n2, n3, n4: integer;
   k: double;
   jgzhanli, fyzhanli, t, t0: integer;
   rolearr, rolearr1, rolearr2: array of smallint;
-  ZY_rolearr: array of TTmpzydui;
+  ZY_rolearr: array[0..9] of TTmpzydui;
   str: WideString;
   kg:integer;
 begin
@@ -3063,7 +3094,7 @@ begin
   t := TimeToNum;
   for i := 0 to length(Rmenpai) - 1 do
   begin
-    //if (debug = 1) then
+    if (debug = 1) then
     begin
       writeln(debugfile, '计算门派' + IntToStr(i));
       flush(debugfile);
@@ -3072,13 +3103,22 @@ begin
       continue;
     jgzhanli := 0;
     max0 := 0;
+    setlength(rolearr, 0);
     for i1 := 0 to length(Rrole) - 1 do
     begin
       if (Rrole[i1].MenPai = i) and (Rrole[i1].dtime < 2) then
       begin
-        setlength(rolearr, max0 + 1);
-        rolearr[max0] := i1;
         Inc(max0);
+      end;
+    end;
+    setlength(rolearr, max0);
+    n:=0;
+    for i1 := 0 to length(Rrole) - 1 do
+    begin
+      if (Rrole[i1].MenPai = i) and (Rrole[i1].dtime < 2) then
+      begin
+        rolearr[n] := i1;
+        Inc(n);
       end;
     end;
     levsort(rolearr);
@@ -3107,7 +3147,7 @@ begin
           begin
             k := max(0, (800 - mpdiaodu[i1].sce[i2].dguanxi)) /
               (4 + mpdiaodu[i1].sce[i2].Count * 4);
-            //if (debug = 1) then
+            if (debug = 1) then
             begin
               writeln(debugfile, '计算门派' + IntToStr(i) + '是否进攻门派' +
                 IntToStr(mpdiaodu[i1].sce[i2].dmenpai) + '场景' +
@@ -3120,7 +3160,7 @@ begin
               fyzhanli := 0;
               max1 := 0;
               max2 := 0;
-              len1 := 0;
+              len1 := 9;   //最多9队增援
               for i3 := 0 to length(Rrole) - 1 do
               begin
                 if (Rrole[i3].MenPai = mpdiaodu[i1].sce[i2].dmenpai) then
@@ -3129,47 +3169,76 @@ begin
                   begin
                     if (Rrole[i3].dtime < 10) then
                     begin
-                      setlength(rolearr1, max1 + 1);
-                      rolearr1[max1] := i3;
                       Inc(max1);
+                    end;
+                  end
+                  else if (Rrole[i3].dtime < 10) then
+                  begin
+                    Inc(max2);
+                  end;
+                end;
+              end;
+              setlength(rolearr1, max1);
+              setlength(rolearr2, max2);
+              n1:=0;
+              n2:=0;
+              n3:=0;
+              for i3 := 0 to length(Rrole) - 1 do
+              begin
+                if (Rrole[i3].MenPai = mpdiaodu[i1].sce[i2].dmenpai) then
+                begin
+                  if (Rrole[i3].weizhi = mpdiaodu[i1].sce[i2].dsnum) then
+                  begin
+                    if (Rrole[i3].dtime < 10) then
+                    begin
+                      rolearr1[n1] := i3;
+                      Inc(n1);
                     end
                     else if (Rrole[i3].dtime < 1000) or
                       ((Rrole[i3].nweizhi = 16) and (Rrole[i3].lsweizhi <> mpdiaodu[i1].sce[i2].dsnum)
-                      and (Rrole[i3].weizhi <> mpdiaodu[i1].sce[i2].dsnum)) then
+                      and (Rrole[i3].weizhi = mpdiaodu[i1].sce[i2].dsnum)) then
                     begin // 防守场景有外出人员，加入增援
-                      setlength(ZY_rolearr, len1 + 1);
-                      ZY_rolearr[len1].duizhang := -1;
-                      ZY_rolearr[len1].len := 0;
-                      if (ZY_rolearr[len1].duizhang < 0) and
+
+                      ZY_rolearr[n3].duizhang := -1;
+                      ZY_rolearr[n3].len := 0;
+                      if (ZY_rolearr[n3].duizhang < 0) and
                         ((Rmenpai[Rrole[i3].MenPai].zmr = i3) or (is_hufa(i3)))
                       then
                       begin
-                        ZY_rolearr[len1].duizhang := i3;
+                        ZY_rolearr[n3].duizhang := i3;
                       end
-                      else if (ZY_rolearr[len1].duizhang >= 0) and
+                      else if (ZY_rolearr[n3].duizhang >= 0) and
                         (Rmenpai[Rrole[i3].MenPai].zmr = i3) then
                       begin
-                        setlength(ZY_rolearr[len1].duiyuan,
-                          ZY_rolearr[len1].len + 1);
-                        ZY_rolearr[len1].duiyuan[ZY_rolearr[len1].len] :=
-                          ZY_rolearr[len1].duizhang;
-                        Inc(ZY_rolearr[len1].len);
-                        ZY_rolearr[len1].duizhang := i3;
+                        ZY_rolearr[n3].duiyuan[ZY_rolearr[n3].len] :=
+                          ZY_rolearr[n3].duizhang;
+                        Inc(ZY_rolearr[n3].len);
+                        if ZY_rolearr[n3].len > 9 then
+                        begin
+                          ZY_rolearr[n3].len:= 9;
+                        end;
+                        ZY_rolearr[n3].duizhang := i3;
                       end
                       else
                       begin
-                        setlength(ZY_rolearr[len1].duiyuan,
-                          ZY_rolearr[len1].len + 1);
-                        ZY_rolearr[len1].duiyuan[ZY_rolearr[len1].len] := i3;
-                        Inc(ZY_rolearr[len1].len);
+                        ZY_rolearr[n3].duiyuan[ZY_rolearr[n3].len] := i3;
+                        Inc(ZY_rolearr[n3].len);
+                        if ZY_rolearr[n3].len > 9 then
+                        begin
+                          ZY_rolearr[n3].len:= 9;
+                        end;
+                      end;
+                      inc(n3);
+                      if n3 >=len1 then
+                      begin
+                        n3:=len1-1;
                       end;
                     end;
                   end
                   else if (Rrole[i3].dtime < 10) then
                   begin
-                    setlength(rolearr2, max2 + 1);
-                    rolearr2[max2] := i3;
-                    Inc(max2);
+                    rolearr2[n2] := i3;
+                    Inc(n2);
                   end;
                 end;
               end;
@@ -3177,9 +3246,8 @@ begin
               begin
                 if ismengyou(i3, mpdiaodu[i1].sce[i2].dmenpai) then
                 begin
-                  setlength(ZY_rolearr, len1 + 1);
-                  ZY_rolearr[len1].duizhang := -1;
-                  ZY_rolearr[len1].len := 0;
+                  ZY_rolearr[n3].duizhang := -1;
+                  ZY_rolearr[n3].len := 0;
                   for i4 := 0 to length(Rrole) - 1 do
                   begin
                     if (Rrole[i4].dtime < 10) and (Rrole[i4].MenPai = i3) then
@@ -3187,33 +3255,42 @@ begin
                       if (random(1000) < Rmenpai[i3].guanxi
                         [mpdiaodu[i1].sce[i2].dmenpai]) then
                       begin
-                        if (ZY_rolearr[len1].duizhang < 0) and
+                        if (ZY_rolearr[n3].duizhang < 0) and
                           ((Rmenpai[Rrole[i4].MenPai].zmr = i4) or (is_hufa(i4)))
                         then
                         begin
-                          ZY_rolearr[len1].duizhang := i4;
+                          ZY_rolearr[n3].duizhang := i4;
                         end
-                        else if (ZY_rolearr[len1].duizhang >= 0) and
+                        else if (ZY_rolearr[n3].duizhang >= 0) and
                           (Rmenpai[Rrole[i4].MenPai].zmr = i4) then
                         begin
-                          setlength(ZY_rolearr[len1].duiyuan,
-                            ZY_rolearr[len1].len + 1);
-                          ZY_rolearr[len1].duiyuan[ZY_rolearr[len1].len] :=
-                            ZY_rolearr[len1].duizhang;
-                          Inc(ZY_rolearr[len1].len);
-                          ZY_rolearr[len1].duizhang := i4;
+
+                          ZY_rolearr[n3].duiyuan[ZY_rolearr[n3].len] :=
+                            ZY_rolearr[n3].duizhang;
+                          Inc(ZY_rolearr[n3].len);
+                          if ZY_rolearr[n3].len > 9 then
+                          begin
+                            ZY_rolearr[n3].len:= 9;
+                          end;
+                          ZY_rolearr[n3].duizhang := i4;
                         end
                         else
                         begin
-                          setlength(ZY_rolearr[len1].duiyuan,
-                            ZY_rolearr[len1].len + 1);
-                          ZY_rolearr[len1].duiyuan[ZY_rolearr[len1].len] := i4;
-                          Inc(ZY_rolearr[len1].len);
+                          ZY_rolearr[n3].duiyuan[ZY_rolearr[n3].len] := i4;
+                          Inc(ZY_rolearr[n3].len);
+                          if ZY_rolearr[n3].len > 9 then
+                          begin
+                            ZY_rolearr[n3].len:= 9;
+                          end;
                         end;
                       end;
                     end;
                   end;
-                  Inc(len1);
+                  Inc(n3);
+                  if n3 >=len1 then
+                  begin
+                    n3:=len1-1;
+                  end;
                 end;
               end;
 
@@ -3229,9 +3306,9 @@ begin
                 for i3 := 0 to max2 - 1 do
                   fyzhanli := fyzhanli + RoleValue(rolearr2[i3], 1);
               end;
-              if len1 > 0 then
+              if n3 > 0 then
               begin
-                for i3 := 0 to len1 - 1 do
+                for i3 := 0 to n3 - 1 do
                 begin
                   if ZY_rolearr[i3].duizhang > 0 then
                   begin
@@ -3254,7 +3331,7 @@ begin
                   end;
                 end;
               end;
-             //if (debug = 1) then
+             if (debug = 1) then
               begin
                 writeln(debugfile, '实力判断：门派' + IntToStr(i) + '攻击力' +
                   IntToStr(jgzhanli) + '门派' +
@@ -3279,11 +3356,11 @@ begin
                 begin
                   break;
                 end;
-                //if (debug = 1) then
+                if (debug = 1) then
                 begin
                   writeln(debugfile, '战场' + IntToStr(i3) + '组队：进攻主队' +
                     IntToStr(max0) + '人；防御主队' + IntToStr(max1) + '人；附近队' +
-                    IntToStr(max2) + '人；增援' + IntToStr(len1));
+                    IntToStr(max2) + '人；增援' + IntToStr(n3));
                   flush(debugfile);
                 end;
                 Rscene[mpdiaodu[i1].sce[i2].dsnum].inbattle := 1;
@@ -3305,69 +3382,89 @@ begin
                 len0 := 0;
                 for i4 := 0 to max0 - 1 do
                 begin
-                  setlength(mpbdata[i3].bteam[2].rolearr, len0 + 1);
-                  mpbdata[i3].bteam[2].rolearr[len0].rnum := rolearr[i4];
-                  mpbdata[i3].bteam[2].rolearr[len0].snum :=
+                  inc(len0);
+                end;
+                setlength(mpbdata[i3].bteam[2].rolearr, len0);
+                n4:=0;
+                for i4 := 0 to max0 - 1 do
+                begin
+                  mpbdata[i3].bteam[2].rolearr[n4].rnum := rolearr[i4];
+                  mpbdata[i3].bteam[2].rolearr[n4].snum :=
                     Rrole[rolearr[i4]].weizhi;
-                  mpbdata[i3].bteam[2].rolearr[len0].isin := 0;
+                  mpbdata[i3].bteam[2].rolearr[n4].isin := 0;
                   aotosetmagic(rolearr[i4]);
-                  mpbdata[i3].bteam[2].rolearr[len0].mag :=
+                  mpbdata[i3].bteam[2].rolearr[n4].mag :=
                     GetGeliveAblemag(rolearr[i4]);
                   Rrole[rolearr[i4]].lsweizhi := mpdiaodu[i1].sce[i2].dsnum;
                   Rrole[rolearr[i4]].nweizhi := 16;
                   Rrole[rolearr[i4]].dtime := 1000;
                   Rrole[rolearr[i4]].btnum := i3;
-                  Inc(len0);
+                  Inc(n4);
                 end;
-                setlength(mpbdata[i3].bteam[3].rolearr, 1);
-                mpbdata[i3].bteam[3].rolearr[0].rnum := (863 + i3);
-                mpbdata[i3].bteam[3].rolearr[0].snum :=
-                  mpdiaodu[i1].sce[i2].dsnum;
-                mpbdata[i3].bteam[3].rolearr[0].isin := 0;
-                mpbdata[i3].bteam[3].rolearr[0].mag := 0;
+
+
                 len0 := 1;
                 for i4 := 0 to max1 - 1 do
                 begin
                   if rolearr1[i4] = 0 then
                     continue;
-                  setlength(mpbdata[i3].bteam[3].rolearr, len0 + 1);
-                  mpbdata[i3].bteam[3].rolearr[len0].rnum := rolearr1[i4];
-                  mpbdata[i3].bteam[3].rolearr[len0].snum :=
-                    Rrole[rolearr1[i4]].weizhi;
-                  mpbdata[i3].bteam[3].rolearr[len0].isin := 0;
-                  aotosetmagic(rolearr1[i4]);
-                  mpbdata[i3].bteam[3].rolearr[len0].mag :=
-                    GetGeliveAblemag(rolearr1[i4]);
-                  Rrole[rolearr1[i4]].lsweizhi := mpdiaodu[i1].sce[i2].dsnum;
-                  Rrole[rolearr1[i4]].nweizhi := 16;
-                  Rrole[rolearr1[i4]].dtime := 1000;
-                  Rrole[rolearr1[i4]].btnum := i3;
-                  Inc(len0);
+                  inc(len0);
                 end;
                 for i4 := 0 to max2 - 1 do
                 begin
                   if rolearr2[i4] = 0 then
                     continue;
-                  setlength(mpbdata[i3].bteam[3].rolearr, len0 + 1);
-                  mpbdata[i3].bteam[3].rolearr[len0].rnum := rolearr2[i4];
-                  mpbdata[i3].bteam[3].rolearr[len0].snum :=
+                  inc(len0);
+                end;
+                setlength(mpbdata[i3].bteam[3].rolearr, len0);
+                mpbdata[i3].bteam[3].rolearr[0].rnum := (863 + i3);
+                mpbdata[i3].bteam[3].rolearr[0].snum :=
+                  mpdiaodu[i1].sce[i2].dsnum;
+                mpbdata[i3].bteam[3].rolearr[0].isin := 0;
+                mpbdata[i3].bteam[3].rolearr[0].mag := 0;
+                n4:=1;
+                for i4 := 0 to max1 - 1 do
+                begin
+                  if rolearr1[i4] = 0 then
+                    continue;
+                  mpbdata[i3].bteam[3].rolearr[n4].rnum := rolearr1[i4];
+                  mpbdata[i3].bteam[3].rolearr[n4].snum :=
+                    Rrole[rolearr1[i4]].weizhi;
+                  mpbdata[i3].bteam[3].rolearr[n4].isin := 0;
+                  aotosetmagic(rolearr1[i4]);
+                  mpbdata[i3].bteam[3].rolearr[n4].mag :=
+                    GetGeliveAblemag(rolearr1[i4]);
+                  Rrole[rolearr1[i4]].lsweizhi := mpdiaodu[i1].sce[i2].dsnum;
+                  Rrole[rolearr1[i4]].nweizhi := 16;
+                  Rrole[rolearr1[i4]].dtime := 1000;
+                  Rrole[rolearr1[i4]].btnum := i3;
+                  Inc(n4);
+                end;
+
+
+                for i4 := 0 to max2 - 1 do
+                begin
+                  if rolearr2[i4] = 0 then
+                    continue;
+                  mpbdata[i3].bteam[3].rolearr[n4].rnum := rolearr2[i4];
+                  mpbdata[i3].bteam[3].rolearr[n4].snum :=
                     Rrole[rolearr2[i4]].weizhi;
-                  mpbdata[i3].bteam[3].rolearr[len0].isin := 0;
+                  mpbdata[i3].bteam[3].rolearr[n4].isin := 0;
                   aotosetmagic(rolearr2[i4]);
-                  mpbdata[i3].bteam[3].rolearr[len0].mag :=
+                  mpbdata[i3].bteam[3].rolearr[n4].mag :=
                     GetGeliveAblemag(rolearr2[i4]);
                   Rrole[rolearr2[i4]].lsweizhi := mpdiaodu[i1].sce[i2].dsnum;
                   Rrole[rolearr2[i4]].nweizhi := 16;
                   Rrole[rolearr2[i4]].dtime := 1000;
                   Rrole[rolearr2[i4]].btnum := i3;
-                  Inc(len0);
+                  Inc(n4);
                 end;
-                for i4 := 0 to len1 - 1 do
+                for i4 := 0 to n3 - 1 do
                 begin
                   addzengyuanarr(ZY_rolearr[i4], i3,
                     mpdiaodu[i1].sce[i2].dmenpai, mpdiaodu[i1].sce[i2].dsnum);
                 end;
-                //if (debug = 1) then
+                if (debug = 1) then
                 begin
                   writeln(debugfile, '门派' + IntToStr(i) + '进攻门派' +
                     IntToStr(mpdiaodu[i1].sce[i2].dmenpai) + '场景' +
@@ -3418,7 +3515,7 @@ end;
 
 procedure AIFight(id: integer);
 var
-  i, j, tmplen, i1, i2, len2, len3, lenzt, lenzy, tmp, l2, l3, k, t: integer;
+  i, j, tmplen, i1, i2, i3, len2, len3, lenzt, lenzy, tmp, l2, l3, k, t: integer;
   str: WideString;
   find: boolean;
 begin
@@ -3433,7 +3530,7 @@ begin
     begin
       if mpbdata[id].bteam[2].rolearr[i1].rnum = mpbdata[id].zaotui[i].rnum then
       begin
-       // if (debug = 1) then
+        if (debug = 1) then
         begin
           writeln(debugfile, '早退' + IntToStr(mpbdata[id].zaotui[i].rnum));
           flush(debugfile);
@@ -3468,7 +3565,7 @@ begin
         if mpbdata[id].bteam[3].rolearr[i1].rnum = mpbdata[id].zaotui[i].rnum
         then
         begin
-         // if (debug = 1) then
+          if (debug = 1) then
           begin
             writeln(debugfile, '早退' + IntToStr(mpbdata[id].zaotui[i].rnum));
             flush(debugfile);
@@ -3583,6 +3680,8 @@ begin
     end;
     for i2 := 0 to len3 - 1 do
     begin
+      Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].weizhi:= mpbdata[id].bteam[3].rolearr[i2].snum;
+      Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].lsweizhi:= -1;
       Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].nweizhi := -1;
       Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].dtime := 0;
       Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].btnum := -1;
@@ -3598,6 +3697,19 @@ begin
       Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].btnum := -1;
       Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].dtime := 5;
       Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].nweizhi := 14;
+
+      for i3:=0 to length(mpbdata[id].zengyuan[i2].duiyuan) - 1 do
+      begin
+        Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].lsweizhi:=-1;
+        if Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].MenPai >= 0 then
+        begin
+          Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].weizhi :=
+            mpbdata[id].zengyuan[i2].duiyuan[i3].snum;
+        end;
+        Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].btnum := -1;
+        Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].dtime := 5;
+        Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].nweizhi := 14;
+      end;
     end;
     str := gbktounicode(@Rmenpai[mpbdata[id].defmp].Name);
     str := str + '在' + gbktounicode(@Rscene[mpbdata[id].snum].Name);
@@ -3641,8 +3753,7 @@ begin
                 end;
                 Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].dtime := 5;
                 Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].btnum := -1;
-                if Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].TeamState
-                  in [1, 2] then
+                if Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].TeamState in [1, 2] then
                 begin
                   Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].nweizhi := 13;
                   Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].dtime := 1000;
@@ -3652,6 +3763,8 @@ begin
               end;
               for i2 := 0 to len3 - 1 do
               begin
+                Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].weizhi:=mpbdata[id].bteam[3].rolearr[i2].snum;
+                Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].lsweizhi:=-1;
                 Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].nweizhi := -1;
                 Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].dtime := 0;
                 Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].btnum := -1;
@@ -3668,6 +3781,20 @@ begin
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].btnum := -1;
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].dtime := 5;
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].nweizhi := 14;
+
+                for i3:=0 to length(mpbdata[id].zengyuan[i2].duiyuan) - 1 do
+                begin
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].lsweizhi:=-1;
+                  if Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].MenPai >= 0 then
+                  begin
+                    Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].weizhi :=
+                      mpbdata[id].zengyuan[i2].duiyuan[i3].snum;
+                  end;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].btnum := -1;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].dtime := 5;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].nweizhi := 14;
+                end;
+
               end;
               str := gbktounicode(@Rmenpai[mpbdata[id].defmp].Name);
               str := str + '在' + gbktounicode(@Rscene[mpbdata[id].snum].Name);
@@ -3707,10 +3834,10 @@ begin
             begin
 
               Rscene[mpbdata[id].snum].inbattle := 0;
-              zhanlin(mpbdata[id].attmp, mpbdata[id].snum);
-              mpbdata[id].key := -1;
+
               for i2 := 0 to len3 - 1 do
               begin
+
                 if Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].MenPai >= 0 then
                 begin
                   Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].weizhi :=
@@ -3719,19 +3846,21 @@ begin
                   Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].lsweizhi := -1;
                 end;
                 Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].dtime := 5;
+                Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].nweizhi:=14;
                 Rrole[mpbdata[id].bteam[3].rolearr[i2].rnum].btnum := -1;
               end;
               for i2 := 0 to len2 - 1 do
               begin
                 Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].nweizhi := -1;
+                Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].weizhi:=mpbdata[id].snum;
+                Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].lsweizhi:=-1;
                 Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].dtime := 0;
                 Rrole[mpbdata[id].bteam[2].rolearr[i2].rnum].btnum := -1;
               end;
               for i2 := 0 to mpbdata[id].ZYlen - 1 do
               begin
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].lsweizhi := -1;
-                if Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].MenPai >= 0
-                then
+                if Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].MenPai >= 0 then
                 begin
                   Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].weizhi :=
                     mpbdata[id].zengyuan[i2].duizhang.snum;
@@ -3739,7 +3868,22 @@ begin
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].btnum := -1;
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].dtime := 5;
                 Rrole[mpbdata[id].zengyuan[i2].duizhang.rnum].nweizhi := 14;
+                for i3:=0 to length(mpbdata[id].zengyuan[i2].duiyuan) - 1 do
+                begin
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].lsweizhi:=-1;
+                  if Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].MenPai >= 0 then
+                  begin
+                    Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].weizhi :=
+                      mpbdata[id].zengyuan[i2].duiyuan[i3].snum;
+                  end;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].btnum := -1;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].dtime := 5;
+                  Rrole[mpbdata[id].zengyuan[i2].duiyuan[i3].rnum].nweizhi := 14;
+                end;
               end;
+
+              zhanlin(mpbdata[id].attmp, mpbdata[id].snum);
+              mpbdata[id].key := -1;
               str := gbktounicode(@Rmenpai[mpbdata[id].attmp].Name);
               str := str + '從' + gbktounicode(@Rmenpai[mpbdata[id].defmp].Name);
               str := str + '手中奪取' +

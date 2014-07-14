@@ -126,16 +126,16 @@ procedure DrawBFieldWithAction(f, bnum, Apicnum: integer);
 // KG新增的函数
 procedure InitNewPic(num, px, py, x, y, w, h: integer; mask: integer = 0);
 procedure display_img(file_name: pAnsiChar; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y: integer); overload;
 function GetPngPic(filename: AnsiString; num: integer): Tpic; overload;
 function GetPngPic(f: integer; num: integer): Tpic; overload;
-procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
-procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 function ReadPicFromByte(p_byte: PByte; size: integer): PSDL_Surface;
@@ -148,7 +148,7 @@ function RoLforUint16(a, n: uint16): uint16; // 循环右移N位
 function RoRforByte(a: byte; n: uint16): byte; // 循环左移N位
 function RoLforByte(a: byte; n: uint16): byte; // 循环右移N位
 procedure DrawEftPic(Pic: Tpic; px, py, level: integer);
-procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
 procedure ZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer);overload;
 function GetZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer): PSDL_Surface;
 function UnicodeToGBK(str: pWideChar): AnsiString;
@@ -386,7 +386,7 @@ begin
       if Music[MusicNum] <> 0 then
       begin
         // BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
-        if (MusicNum > -1) and (MusicNum < 1000) then
+        if (nowmusic > -1) and (nowmusic < 1000) then
         begin
           BASS_ChannelStop(Music[nowmusic]);
           BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);
@@ -722,7 +722,7 @@ begin
     SDL_FreeSurface(Image);
   end;
 end;
-procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
 var
   grp:integer;
 begin
@@ -735,7 +735,7 @@ begin
   end;
   display_imgFromSurface(Image.pic, x, y, x1, y1, w, h);
 end;
-procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
 var
   grp:integer;
 begin
@@ -1680,7 +1680,7 @@ begin
   while (word <> nil) and (word^ > 0) do
   begin
     pword[1] := word^;
-    dest.x := x_pos - ax1;
+    //dest.x := x_pos - ax1;   某些字体要偏移半格
     Inc(word);
     if pword[1] > 128 then
     begin
@@ -1962,11 +1962,11 @@ begin
     2:
       DrawBField;
     3:
-      display_imgFromSurface(TITLE2_BEGIN_PIC.Pic, 0, 0);
+      display_imgFromSurface(TITLE2_BEGIN_PIC, 0, 0);
     4:
-      display_imgFromSurface(DEATH_PIC.Pic, 0, 0);
+      display_imgFromSurface(DEATH_PIC, 0, 0);
     6:
-      display_imgFromSurface(TITLE1_BEGIN_PIC.Pic, 0, 0);
+      display_imgFromSurface(TITLE1_BEGIN_PIC, 0, 0);
   end;
   if RShowpic.repeated > 0 then
   begin
@@ -1993,7 +1993,6 @@ begin
 end;
 
 // 显示主地图场景于屏幕
-
 procedure DrawMMap;
 var
   i1, i2, i, sum, x, y, k, c, widthregion, sumregion, num, h, MPicAmount: integer;
@@ -2139,7 +2138,6 @@ end;
 
 
 // 画场景到屏幕
-
 procedure DrawScene;
 var
   i, x, y, xpoint, ypoint: integer;
@@ -3164,7 +3162,7 @@ begin
   Result.Pic := ReadPicFromByte(@Data[0], len);
   FileClose(f);
 end;
-procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3177,7 +3175,7 @@ begin
   end;
   drawPngPic(Image.pic, 0, 0, Image.Pic.pic.w, Image.Pic.pic.h, px, py, mask, maskvalue);
 end;
-procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3439,7 +3437,7 @@ begin
   SDL_FreeSurface(pic1.Pic);
 end;
 
-procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
 var
   grp:integer;
   a, b: double;
@@ -3712,7 +3710,6 @@ procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
 var
   realx, realy, realw, realh, ZoomType: integer;
   tempscr: PSDL_Surface;
-  now, Next: uint32;
   dest: TSDL_Rect;
   TextureID: GLUint;
 begin
@@ -3809,9 +3806,7 @@ begin
 end;
 
 procedure QuitConfirm;
-var
-  tempscr: PSDL_Surface;
-  menuString: array [0 .. 1] of WideString;
+
 begin
   if (EXIT_GAME = 0) or (AskingQuit = True) then
   begin
@@ -3842,7 +3837,7 @@ end;
 
 procedure CheckBasicEvent;
 var
-  i, x, y: integer;
+  x, y: integer;
 begin
   // if not (LoadingScence) then
   case event.type_ of

@@ -45,7 +45,7 @@ function mpzyjc(mpnum: integer): integer;
 procedure aotosetmagic(rnum: integer);
 function RoleValue(rnum,mods: integer): integer;
 // 武功排序
-procedure magicsort(var mag, lev: array of integer);
+procedure magicsort(var mag, lev: array of integer;len:integer);
 // 計算武功強度值
 function countmagvalue(mnum, mlev: integer): integer;
 // 選擇製造物品
@@ -1898,7 +1898,7 @@ end;
 function RoleValue(rnum,mods: integer): integer;
 var
   i, i1, i2, j, k, n, k1, k2, k3, mpnum, tgt: integer;
-  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array of integer;
+  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array[0..30] of integer;
   value, tvalue, MaxValue: double;
 begin
   Result := 0;
@@ -1908,7 +1908,6 @@ begin
   MaxValue := 0;
   tgt := 0;
   mpnum := Rrole[rnum].MenPai;
-
   writeln(debugfile, '计算人物强度：' + IntToStr(rnum));
   flush(debugfile);
   for j := 0 to 29 do
@@ -1917,8 +1916,6 @@ begin
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
-      setlength(tgongti, k1 + 1);
-      setlength(tgtlev, k1 + 1);
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -1927,8 +1924,6 @@ begin
     end
     else
     begin
-      setlength(tmagic, k2 + 1);
-      setlength(tmlev, k2 + 1);
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -1995,9 +1990,7 @@ begin
               writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
                + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               flush(debugfile);
-              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
-              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2009,7 +2002,7 @@ begin
       begin
         writeln(debugfile, '外功排序') ;
         flush(debugfile);
-        magicsort(tmag, tlev);
+        magicsort(tmag, tlev,k3-1);
         for i1 := 0 to min(k3 - 1, 9) do
         begin
           value := value + countmagvalue(tmag[i1], tlev[i1]);
@@ -2028,7 +2021,7 @@ begin
   end
   else if k2 > 0 then
   begin
-    magicsort(tmagic, tmlev);
+    magicsort(tmagic, tmlev,k2-1);
     tvalue := 0;
     for i1 := 0 to min(k2 - 1, 9) do
     begin
@@ -2042,7 +2035,7 @@ end;
 procedure aotosetmagic(rnum: integer);
 var
   i, i1, i2, j, k, n, k1, k2, k3, mpnum, tgt: integer;
-  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array of integer;
+  tmagic, tmlev, tgongti, tgtlev, tmag, tlev: array[0..30] of integer;
   value, tvalue, MaxValue: double;
 begin
   k1 := 0;
@@ -2060,8 +2053,7 @@ begin
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
-      setlength(tgongti, k1 + 1);
-      setlength(tgtlev, k1 + 1);
+
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -2070,8 +2062,7 @@ begin
     end
     else
     begin
-      setlength(tmagic, k2 + 1);
-      setlength(tmlev, k2 + 1);
+
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -2137,9 +2128,7 @@ begin
               //writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
               // + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               //flush(debugfile);
-              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
-              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2151,7 +2140,7 @@ begin
       begin
         //writeln(debugfile, '外功排序') ;
         //flush(debugfile);
-        magicsort(tmag, tlev);
+        magicsort(tmag, tlev,k3-1);
         for i1 := 0 to min(k3 - 1, 9) do
         begin
           value := value + countmagvalue(tmag[i1], tlev[i1]);
@@ -2173,15 +2162,15 @@ end;
 
 // 武功排序
 
-procedure magicsort(var mag, lev: array of integer);
+procedure magicsort(var mag, lev: array of integer;len:integer);
 var
-  i, j, key1, key2: integer;
+  i, j, key1, key2 : integer;
 begin
-  for i := length(mag) - 2 downto 0 do
+  for i := len - 2 downto 0 do
   begin
     key1 := mag[i];
     key2 := lev[i];
-    for j := i + 1 to length(mag) - 1 do
+    for j := i + 1 to len - 1 do
     begin
       if countmagvalue(mag[j], lev[j]) > countmagvalue(key1, key2) then
       begin
@@ -2443,24 +2432,18 @@ begin
   if (tipsstring <> '') and (Showtips.num < 5) then
   begin
     Inc(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
     Showtips.str[Showtips.num - 1] := tipsstring;
-    setlength(Showtips.x, Showtips.num);
     Showtips.x[Showtips.num - 1] := CENTER_X * 2 + 50;
-    setlength(Showtips.y, Showtips.num);
     if Showtips.num > 1 then
       Showtips.y[Showtips.num - 1] := Showtips.y[Showtips.num - 2]
     else
       Showtips.y[Showtips.num - 1] := CENTER_Y * 2 - 40;
-    setlength(Showtips.yadd, Showtips.num);
     Showtips.yadd[Showtips.num - 1] := Showtips.y[Showtips.num - 1];
     for i := Showtips.num - 2 downto 0 do
     begin
       Showtips.yadd[i] := Showtips.yadd[i + 1] - 25;
     end;
-    setlength(Showtips.SurCreated, Showtips.num);
     Showtips.SurCreated[Showtips.num - 1] := false;
-    setlength(Showtips.Sur, Showtips.num);
   end;
 end;
 
@@ -2491,14 +2474,8 @@ begin
       Showtips.SurCreated[i] := Showtips.SurCreated[i + 1];
       Showtips.sur[i] := Showtips.sur[i + 1];
     end;
+    Showtips.SurCreated[Showtips.num - 1]:=false;
     Dec(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
-    setlength(Showtips.x, Showtips.num);
-    setlength(Showtips.y, Showtips.num);
-    setlength(Showtips.yadd, Showtips.num);
-
-    setlength(Showtips.SurCreated, Showtips.num);
-    setlength(Showtips.Sur, Showtips.num);
     if num > Showtips.num then
     begin
       exit;
@@ -3262,14 +3239,17 @@ begin
               if (random(jgzhanli * Rmenpai[i].kzq) > (fyzhanli * 150)) and
                 (max0 > 0) then
               begin
+                kg:=-1;
                 for i3 := 0 to 19 do
                 begin
-                  kg := i3;
                   if mpbdata[i3].key < 0 then
+                  begin
+                    kg := i3;
                     break;
+                  end;
                 end;
                 i3:=kg;
-                if i3 > 19 then
+                if (i3 < 0) or (i3 > 19) then
                 begin
                   break;
                 end;

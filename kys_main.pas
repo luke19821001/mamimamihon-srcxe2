@@ -166,7 +166,7 @@ begin
 
   if font = nil then
   begin
-    MessageBox(0, pWideChar(Format('Error:%s!', [SDL_GetError])), 'Error',
+    MessageBox(0, pChar(Format('Error:%s!', [SDL_GetError])), 'Error',
       MB_OK or MB_ICONHAND);
     exit;
   end;
@@ -175,7 +175,7 @@ begin
   Randomize;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) then
   begin
-    MessageBox(0, pWideChar(Format('Couldn''t initialize SDL : %s',
+    MessageBox(0, pChar(Format('Couldn''t initialize SDL : %s',
       [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     SDL_Quit;
     exit;
@@ -189,7 +189,7 @@ begin
   // InitalMusic;
   // SDL_Init(SDL_INIT_AUDIO);
   // Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 8192);
-  versionstr := gbktounicode('v 0.602  ');
+  versionstr := gbktounicode('v 0.603  ');
   tmp := 'In Stories ' + versionstr;
   title := utf8encode(tmp);
   SDL_WM_SetIcon(IMG_Load('resource\icon'), 0);
@@ -224,7 +224,7 @@ begin
 
   if (RealScreen = nil) then
   begin
-    MessageBox(0, pWideChar(Format('Couldn''t set 640x480x8 video mode : %s',
+    MessageBox(0, pChar(Format('Couldn''t set 640x480x8 video mode : %s',
       [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     SDL_Quit;
     halt(1);
@@ -2052,16 +2052,22 @@ begin
     if (integer(now) - integer(before) > 40) then
     begin
       settips;
-      for i := 0 to ShowTips.num - 1 do
+      i:=0;
+      while(true) do
       begin
+        if i >= showTips.num then
+        begin
+          break;
+        end;
         if ShowTips.x[i] < -400 then
         begin
           dectips(i);
         end
         else
         begin
-          Dec(ShowTips.x[i], 10);
+          Dec(ShowTips.x[i], 5);
         end;
+        inc(i);
       end;
       before := now;
       isdraw := True;
@@ -2678,16 +2684,22 @@ begin
     begin
       ChangeCol;
       settips;
-      for i := 0 to ShowTips.num - 1 do
+      i:=0;
+      while(true) do
       begin
+        if i >= ShowTips.num then
+        begin
+          break;
+        end;
         if ShowTips.x[i] < -400 then
         begin
           dectips(i);
         end
         else
         begin
-          Dec(ShowTips.x[i], 10);
+          Dec(ShowTips.x[i], 5);
         end;
+        inc(i);
       end;
       if (integer(now) - integer(next_time) > 0) then
       begin
@@ -6520,6 +6532,7 @@ begin
           i := i + 5;
         end;
     end;
+
     if (tryevent) and (TryEventTmpI + EventEndCount <= i) then
     begin
       tryevent := False;

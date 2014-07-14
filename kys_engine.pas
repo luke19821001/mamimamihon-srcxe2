@@ -611,7 +611,7 @@ begin
     Image := SDL_LoadBMP(file_name);
     if (Image = nil) then
     begin
-      MessageBox(0, pWideChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
+      MessageBox(0, pChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
         MB_OK or MB_ICONHAND);
       exit;
     end;
@@ -619,7 +619,7 @@ begin
     dest.y := y;
     Image := sdl_displayformat(Image);
     if (SDL_BlitSurface(Image, nil, screen, @dest) < 0) then
-      MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(Image);
   end;
@@ -637,7 +637,7 @@ begin
     Image := IMG_Load(file_name);
     if (Image = nil) then
     begin
-      MessageBox(0, pWideChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
+      MessageBox(0, pChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
         MB_OK or MB_ICONHAND);
       exit;
     end;
@@ -648,7 +648,7 @@ begin
     dest1.w := w;
     dest1.h := h;
     if (SDL_BlitSurface(Image, @dest1, screen, @dest) < 0) then
-      MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(Image);
   end;
@@ -672,7 +672,7 @@ begin
   dest1.w := w;
   dest1.h := h;
   if (SDL_BlitSurface(Image, @dest1, screen, @dest) < 0) then
-    MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   // SDL_FreeSurface(image);
 
@@ -694,7 +694,7 @@ begin
   dest1.w := w;
   dest1.h := h;
   if (SDL_BlitSurface(Image.Pic, @dest1, screen, @dest) < 0) then
-    MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   // SDL_FreeSurface(image);
 
@@ -710,14 +710,14 @@ begin
     Image := IMG_Load(file_name);
     if (Image = nil) then
     begin
-      MessageBox(0, pWideChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
+      MessageBox(0, pChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error',
         MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
     dest.y := y;
     if (SDL_BlitSurface(Image, nil, screen, @dest) < 0) then
-      MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(Image);
   end;
@@ -759,7 +759,7 @@ begin
   dest.x := x;
   dest.y := y;
   if (SDL_BlitSurface(Image, nil, screen, @dest) < 0) then
-    MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   // SDL_FreeSurface(image);
 end;
@@ -775,7 +775,7 @@ begin
   dest.x := x;
   dest.y := y;
   if (SDL_BlitSurface(Image.Pic, nil, screen, @dest) < 0) then
-    MessageBox(0, pWideChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBox(0, pChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   // SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   // SDL_FreeSurface(image);
 end;
@@ -1993,7 +1993,6 @@ begin
 end;
 
 // 显示主地图场景于屏幕
-
 procedure DrawMMap;
 var
   i1, i2, i, sum, x, y, k, c, widthregion, sumregion, num, h, MPicAmount: integer;
@@ -2139,7 +2138,6 @@ end;
 
 
 // 画场景到屏幕
-
 procedure DrawScene;
 var
   i, x, y, xpoint, ypoint: integer;
@@ -2715,7 +2713,8 @@ end;
 
 procedure LoadBfieldPart(x, y: integer; onlyBuild: integer = 0);
 var
-  i1, i2: integer;
+  i, i1, i2: integer;
+  dest: TSDL_Rect;
 begin
   LT.x := x;
   LT.y := y;
@@ -2730,6 +2729,38 @@ begin
       else
         PutPixel(screen, i1, i2, 0);
 
+  for i := 0 to Showtips.num - 1 do
+  begin
+    if Showtips.y[i] < Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] + 5;
+      if Showtips.y[i] > Showtips.yadd[i] then
+        Showtips.yadd[i] := Showtips.yadd[i];
+    end
+    else if Showtips.y[i] > Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] - 5;
+      if Showtips.y[i] < Showtips.yadd[i] then
+        Showtips.yadd[i] := Showtips.yadd[i];
+    end;
+    if (Showtips.str[i] <> '') then
+    begin
+      if not Showtips.surCreated[i] then
+      begin
+        //Showtips.sur[i] := SDL_CreateRGBSurface(0, length(Showtips.str[i]) * 20, 20, 32, 0, 0, 0, 0);
+        Showtips.sur[i] := SDL_CreateRGBSurface(0, screen.w * 2, 20, 32, 0, 0, 0, 0);
+        DrawText(Showtips.sur[i], @Showtips.str[i][1], 0, 0, ColColor($5));
+        SDL_SetAlpha(Showtips.sur[i], SDL_SRCALPHA, 128);
+        Showtips.surCreated[i] := true;
+      end
+      else
+      begin
+        dest.x := Showtips.x[i];
+        dest.y := Showtips.y[i];
+        SDL_BlitSurface(Showtips.sur[i], nil, screen, @dest);
+      end;
+    end;
+  end;
 end;
 
 // 画带光标的子程

@@ -1,0 +1,666 @@
+unit kys_type;
+
+interface
+
+uses
+  SDL,
+  SDL_ttf,
+  //lua52,
+  bass,
+  inifiles;
+
+type
+  TShowTips = record
+    num:integer;
+    str:array[0..4] of widestring;
+    x,y,yadd:array[0..4] of smallint;
+    SurCreated:array[0..4] of boolean;
+    Sur: array[0..4] of PSDL_Surface;
+  end;
+  TRShowpic = record
+    repeated,tp,pnum,x,y:smallint;
+  end;
+  TXunchou = record
+    num: smallint;
+    rnumlist,team: array of smallint;
+  end;
+  TStishi = record
+    talklen, moon, day: smallint;
+    talk: array of AnsiChar;
+  end;
+
+  Tsavtishi = record
+    num: integer;
+    stishi: array of TStishi;
+  end;
+
+  Ttishi = record
+    talknum, btime, dtime: smallint;
+  end;
+
+  Trenwu = record
+    num, talknum, status, moon, day: smallint;
+    talks: WideString;
+  end;
+
+  pyword = record
+    hanzi: array[0..3] of AnsiChar;
+    pinyin: array[0..8] of AnsiChar;
+  end;
+
+  TPosition = record
+    x, y: integer;
+  end;
+
+  TRect = record
+    x, y, w, h: integer;
+  end;
+
+  TPic = record
+    x, y, black: integer;
+    pic: PSDL_Surface;
+  end;
+
+  TPicdata = record
+    ispic: boolean;
+    len: integer;
+    Data: array of byte;
+    pic: Tpic;
+  end;
+
+  TItemList = record
+    Number, Amount: Smallint;
+  end;
+
+  TCallType = (Element, Address);
+
+  Ttexiao = record
+    x, y: smallint;
+  end;
+  Tshopitem = record
+    inum, amount: smallint;
+  end;
+  TBpic = record
+    key:boolean;
+    num:integer;
+    pic:Tpic;
+  end;
+  //以下所有类型均有两种引用方式：按照别名引用；按照短整数数组引用
+
+  TRole = record
+    case TCallType of
+      Element: (ListNum, HeadNum, IncLife, fuyuan: Smallint;
+        Name: array[0..9] of AnsiChar;
+        zhanwei1:smallint;
+        Nick: array[0..9] of AnsiChar;
+        zhanwei2:smallint;
+        Sexual, Level: Smallint;
+        Exp: uint16; //18
+        CurrentHP, MaxHP, Hurt, Poision, PhyPower: Smallint; //23
+        ExpForItem: uint16;
+        Equip: array[0..4] of Smallint;
+        Gongti: smallint;
+        TeamState: smallint; //31
+        Angry: smallint;
+        israndomed: smallint;
+        Moveable, AddSkillPoint, PetAmount: smallint;
+        Impression, dtime, difficulty: smallint;
+        zhongcheng: smallint;
+        rehurt: smallint; //41
+        MPType, CurrentMP, MaxMP: Smallint;
+        Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon: Smallint;
+        Knowledge, Ethics, AttPoi, AttTwice, Repute, Aptitude, PracticeBook: Smallint;
+        ExpForBook: uint16; //64
+        xiangxing, jiaoqing, Rtype, swq, pdq, xxq, jqq, MenPai, shifu, scsx, bssx: smallint; //75
+        Choushi: array[0..1] of smallint;
+        weizhi, nweizhi, nfangxiang, unuse0, lwq, msq, ldq, qtq, lsweizhi, lsnweizhi, lsfangxiang: smallint;
+        Sx, Sy, songshu, gongxian, unuse5, unuse6, unuse7, unuse8, unuse9,btnum: smallint; //98
+        LMagic, MagLevel: array[0..29] of smallint; //158
+        TakingItem, TakingItemAmount: array[0..3] of smallint;
+        jhMagic: array[0..9] of smallint; //176
+        LZhaoshi: array[0..29] of smallint;
+        MRevent: smallint;
+        AllEvent: array[0..8] of smallint;
+        leaveevent: smallint);
+      Address: (Data: array[0..217] of Smallint);
+  end;
+
+  TItem = record
+    case TCallType of
+      Element: (ListNum: Smallint;
+        Name: array[0..19] of AnsiChar;
+        zhanwei1:smallint;
+        ExpOfMagic: smallint;
+        SetNum, BattleEffect, WineEffect, needSex, rehurt: smallint;
+        unuse: array[0..3] of smallint; //21
+        Introduction: array[0..29] of AnsiChar; //36
+        zhanwei2:smallint;
+        Magic, AmiNum, User, EquipType, ShowIntro, ItemType, inventory, price, EventNum: Smallint; //46
+        AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP: Smallint;
+        AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: Smallint; //60
+        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, AddKnowledge, AddEthics,
+        AddAttTwice, AddAttPoi: Smallint; //69
+        OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedcine, NeedMedPoi: Smallint; //77
+        NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon, NeedAptitude: Smallint; //83
+        NeedExp, Count, Rate: Smallint; //86
+        NeedItem, NeedMatAmount: array[0..4] of Smallint);
+      Address: (Data: array[0..96] of Smallint);
+  end;
+
+  TScene = record
+    case TCallType of
+      Element: (ListNum: Smallint;
+        Name: array[0..9] of AnsiChar;
+        zhanwei1:smallint;
+        ExitMusic, EntranceMusic: Smallint;
+        Pallet, EnCondition: Smallint; //10
+        MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: Smallint;
+        EntranceY, EntranceX: Smallint;
+        ExitY, ExitX: array[0..2] of Smallint; //22
+        Mapmode, unuse, menpai, inbattle, zlwc, lwc, zcjg, cjg: Smallint; //30
+        lwcx, lwcy, cjgx, cjgy: array[0..4] of smallint; //50
+        bgskg, bgsx, bgsy, ldlkg, ldlx, ldly, bqckg, bqcx, bqcy, qizhix, qizhiy, ldjd, dzjd, fyjc, fyss: smallint; //65
+        addziyuan: array[0..9] of smallint;
+        lianjie: array[0..9] of smallint);
+      Address: (Data: array[0..85] of Smallint);
+  end;
+
+  TMagic = record
+    case TCallType of
+      Element: (ListNum: Smallint;
+        Name: array[0..9] of AnsiChar;
+        zhanwei1:smallint;
+        useness, miji, NeedHP, MinStep, bigami, EventNum: Smallint;
+        SoundNum, MagicType, AmiNum, HurtType, AttAreaType, NeedMP, Poision: Smallint;
+        MinHurt, MaxHurt, HurtModulus, AttackModulus, MPModulus, SpeedModulus, WeaponModulus,
+        Ismichuan, AddMpScale, AddHpScale: Smallint;
+        MoveDistance, AttDistance: array[0..9] of Smallint;
+        AddHP, AddMP, AddAtt, AddDef, AddSpd: array[0..2] of smallint;
+        MinPeg, MaxPeg, MinInjury, MaxInjury, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: Smallint;
+        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, BattleState: smallint;
+        NeedExp: array[0..2] of smallint;
+        MaxLevel: smallint;
+        Introduction: array[0..59] of AnsiChar;
+        zhanwei2:smallint;
+        zhaoshi: array[0..4] of smallint;
+        teshu: array[0..9] of smallint;
+        teshumod: array[0..9] of smallint);
+      Address: (Data: array[0..138] of Smallint);
+  end;
+
+  TShop = record
+    case TCallType of
+      Element: (shopItem: array[0..17] of Tshopitem;);
+      Address: (Data: array[0..35] of Smallint);
+  end;
+
+  Tzhaoshi = record
+    case TCallType of
+      Element: (daihao, congshu, shunwei: Smallint;
+        Name: array[0..19] of AnsiChar;
+        zhanwei1:smallint;
+        ygongji, gongji, yfangyu, fangyu: Smallint;
+        shuoming: array[0..45] of AnsiChar; //40
+        zhanwei2:smallint;
+        texiao: array[0..23] of Ttexiao); //89
+      Address: (Data: array[0..89] of Smallint);
+  end;
+
+  Tmenpai = record
+    case TCallType of
+      Element: (num: Smallint;
+        Name: array[0..19] of AnsiChar;
+        zhanwei1:smallint;
+        jvdian, zongduo, zmr, dizi, shengwang, shane: Smallint; //17
+        ziyuan: array[0..9] of Smallint;
+        aziyuan: array[0..9] of Smallint;
+        neigong: array[0..19] of Smallint; //57
+        guanxi: array[0..39] of Smallint; //97
+        zhiwu: array[0..9] of smallint; //107
+        kzq, dzq, czsd, qizhi, mdizigrp, mdizipic, fdizigrp, fdizipic, sexy, identity, endevent: smallint;
+        tongmeng,unuse1,unuse2,unuse3,unuse4:smallint);
+      Address: (Data: array[0..122] of Smallint);
+  end;
+
+  TBattleRole = record
+    case TCallType of
+      Element: (rnum, Team, Y, X, Face, Dead, Step, Acted: Smallint;
+        Pic, ShowNumber, showgongji, showfangyu, szhaoshi, Progress, round, speed: Smallint; //15
+        ExpGot, Auto, Show, Wait, frozen, killed, Knowledge, LifeAdd, Zhuanzhu, pozhao, wanfang: Smallint; //24
+        //AddAtt, AddDef, AddSpd, addfenfa,addjingzhun,AddStep, AddDodge,addtime: Smallint; //31 luke删除，改为每回合衰减
+        zhuangtai: array[0..13] of smallint;
+        lzhuangtai: array[0..9] of smallint);
+      Address: (Data: array[0..50] of Smallint);
+  end;
+
+  //战场数据, 即war.sta文件的映像
+  TWarSta = record
+    case TcallType of
+      Element: (BattleNum: smallint;
+        BattleName: array[0..9] of byte;
+        battlemap, exp, battlemusic: smallint; //9
+        mate, automate, mate_x, mate_y: array[0..11] of smallint; //56
+        enemy, enemy_x, enemy_y: array[0..29] of smallint; //146
+        BoutEvent, OperationEvent: smallint;
+        GetKongfu: array[0..2] of smallint;
+        GetItems: array[0..2] of smallint; //154
+        GetMoney: smallint);
+      Address: (Data: array[0..155] of smallint;)
+  end;
+
+  //各种战场特效
+  TBRoleColor = record
+    case tcalltype of
+      Element: (green, red, yellow, blue, gray: integer;)
+  end;
+  //門派戰數據
+
+  TBTRole = record
+    rnum, snum, isin, mag: smallint;
+  end;
+  TBTeam = record
+    RoleArr: array of TBTRole;
+  end;
+  TBZYRole = record
+    rnum, snum, isin, mag ,day: smallint;
+  end;
+  TBZYdui = record
+    duizhang:TBZYRole;
+    duiyuan:array of TBZYRole;
+  end;
+  TTmpZYdui = record
+    len,duizhang:smallint;
+    duiyuan:array of smallint;
+  end;
+  TBZaotui = record
+    rnum, snum, btnum: smallint;
+  end;
+  TMpBdata = record
+    id: smallint;
+    key: smallint;
+    daytime: integer;
+    attmp, defmp, snum: smallint;
+    BTeam: array[0..3] of TBTeam;
+    ZYlen:integer;
+    zengyuan :array of TBZYdui;
+    zaotui: array of TBZaotui;
+  end;
+  Tscenediaodu = record
+    //场景编号，相邻别派据点数，关系最差门派，关系，敌视目标据点
+    snum, Count, dmenpai, dguanxi, dsnum: smallint;
+  end;
+
+  TMpdiaodu = record
+    mpnum, scount, rcount: smallint; //门派号，拥有据点数+1，总人数+1
+    sce: array of tscenediaodu; //场景
+    rnum, isin: array of smallint; //门派人物号，是否调度
+
+  end;
+
+
+
+  TtimetriggerArr = record
+    renwunum,Rnum, snum, DNum, stime,Dtime,xhtime,xhrandom,endtime,types,event: smallint; //回收场景人物
+  end;
+  Ttimetrigger = record
+    Count: smallint;
+    adds: array of TtimetriggerArr;
+  end;
+  TShowBWord = record
+    sign: smallint; //0连击左右弱点攻击,1攻防招式,2破招,3完防,4愤怒,5战败,6队友战败
+    rnum: array[0..7] of smallint;
+    col1, col2, x, y: array[0..7] of smallint;
+    words: array[0..7] of WideString;
+    starttime: array[0..7] of uint32;
+    delay: array[0..7] of smallint;
+    Sx, Sy: array[0..7] of single;
+  end;
+
+  //戰場語錄
+
+  TAllBTalk = record
+    talk: array[0..1] of array[0..2] of array[0..9] of array[0..9] of WideString;
+    etalk: array[0..2] of array[0..9] of WideString;
+  end;
+
+  Tsave = record
+    len:integer;
+    a:array of system.byte;
+  end;
+
+var
+  teststr: AnsiString;
+  HW: integer = 0;
+  AppPath: AnsiString; //程序的路径
+  CHINESE_FONT: PAnsiChar = 'resource\Chinese.ttf';
+  CHINESE_FONT_SIZE: integer = 20;
+  ENGLISH_FONT: PAnsiChar = 'resource\English.ttf';
+  ENGLISH_FONT_SIZE: integer = 18;
+  CHINESE_FONT2_SIZE: integer = 18;
+  ENGLISH_FONT2_SIZE: integer = 16;
+  CENTER_X: integer = 320;
+  CENTER_Y: integer = 220;
+  //文件名定义
+  KDEF_IDX: PAnsiChar = 'resource\kdef.idx';
+  KDEF_GRP: PAnsiChar = 'resource\kdef.grp';
+  TALK_IDX: PAnsiChar = 'resource\talk.idx';
+  TALK_GRP: PAnsiChar = 'resource\talk.grp';
+  T1_IDX: PAnsiChar = 'resource\t1.idx';
+  T1_GRP: PAnsiChar = 'resource\t1.grp';
+  NAME_IDX: PAnsiChar = 'resource\name.idx';
+  NAME_GRP: PAnsiChar = 'resource\name.grp';
+  ITEMS_file: PAnsiChar = 'resource\items.Pic';
+  HEADS_file: PAnsiChar = 'resource\heads.Pic';
+  BackGround_file: PAnsiChar = 'resource\BackGround.Pic';
+  GAME_file: PAnsiChar = 'resource\Game.Pic';
+  MOVIE_file: PAnsiChar = 'resource\Begin.pic';
+  Scene_file: PAnsiChar = 'resource\Scene.pic';
+  Skill_file: PAnsiChar = 'resource\Skill.pic';
+  Meun_file : PAnsiChar = 'resource\Menu.Pic';
+  //使用50指令时是否自动刷新屏幕，0为自动刷新
+  AutoRefresh: integer = 0;
+
+  //以下为常数表, 其中多数可以由ini文件改变
+  ITEM_BEGIN_PIC: integer = 3501; //物品起始图片
+  BEGIN_EVENT: integer = 691; //初始事件
+  BEGIN_Scene: integer = 70; //初始场景
+  BEGIN_Sx: integer = 20; //初始坐标(程序中的x, y与游戏中是相反的, 这是早期的遗留问题)
+  BEGIN_Sy: integer = 19; //初始坐标
+  SOFTSTAR_BEGIN_TALK: integer = 2547; //软体娃娃对话的开始编号
+  SOFTSTAR_NUM_TALK: integer = 18; //软体娃娃的对话数量
+  MAX_PHYSICAL_POWER: integer = 100; //最大体力
+  MONEY_ID: integer = 0; //银两的物品代码
+  COMPASS_ID: integer = 1; //罗盘的物品代码
+  MAP_ID: integer = 401; //地图的物品代码
+  BEGIN_LEAVE_EVENT: integer = 950; //起始离队事件
+  BEGIN_BATTLE_ROLE_PIC: integer = 2553; //人物起始战斗贴图
+  MAX_LEVEL: integer = 30; //最大等级
+  MAX_WEAPON_MATCH: integer = 7; //'武功武器配合'组合的数量
+  MIN_KNOWLEDGE: integer = 0; //最低有效武学常识
+  MAX_ITEM_AMOUNT: integer = 300; //最大物品数量
+  MAX_HP: integer = 999; //最大生命
+  MAX_MP: integer = 999; //最大内功
+  Showanimation: integer = 0;
+  MaxProList: array[45..60] of integer = (200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
+    200, 200, 100, 100, 100, 1);
+  //最大攻击值~最大左右互博值
+  SoundVolume: integer = 32;
+  LIFE_HURT: integer = 100; //伤害值比例
+
+  //以下3个常数实际并未使用, 不能由ini文件指定
+  BEGIN_WALKPIC: integer = 5000; //起始的行走贴图(并未使用)
+  teamcount: smallint = 0;
+  Warsta: Twarsta;
+  MPic, SPic: array of byte; //去掉WPM
+  MIdx, SIdx, WIdx: array of integer;
+  // HPic: array[0..2000000] of byte;
+  // HIdx: array[0..500] of integer;
+  //以上为贴图的内容及索引
+  Earth, Surface, Building, BuildX, BuildY, Entrance: array[0..479, 0..479] of smallint;
+  //主地图数据
+  ACol: array[0..768] of byte;
+  Col: array[0..3] of array[0..767] of byte;
+  //默认调色板数据
+  InShip, Useless1, Mx, My, Sx, Sy, MFace, ShipX, ShipY, ShipFace: Smallint;
+  TeamList: array[0..5] of Smallint;
+  RItemList: array of TItemList;
+  RItemList_a: array of TItemList;
+
+  isbattle: boolean = False;
+  MStep, Still: integer;
+  //主地图坐标, 方向, 步数, 是否处于静止
+  Cx, Cy, SFace, SStep: integer;
+  //场景内坐标, 场景中心点, 方向, 步数
+  CurScene, CurItem, CurEvent, CurMagic, CurrentBattle, Where: integer;
+  //当前场景, 事件(在场景中的事件号), 使用物品, 战斗
+  //where: 0-主地图, 1-场景, 2-战场, 3-开头画面,4結束介面  ,6 開始讀取介面
+  SaveNum: smallint;
+  //存档号, 未使用
+  Rrole: array of TRole;
+  Rrole_a: array of TRole;
+  Ritem: array of TItem;
+  RScene: array of TScene;
+  Rmagic: array of TMagic;
+  RShop: array of TShop;
+  Rzhaoshi: array of Tzhaoshi;
+  Rmenpai: array of Tmenpai;
+  //R文件数据, 均远大于原有容量
+  ItemList: array[0..500] of smallint;
+  SData: array of array[0..5, 0..63, 0..63] of smallint;
+  DData: array of array[0..399, 0..17] of smallint;
+  //S, D文件数据
+  //Scene1, SData[CurScene, 1, , Scene3, Scene4, Scene5, Scene6, Scene7, Scene8: array[0..63, 0..63] of smallint;
+  //当前场景数据
+  //0-地面, 1-建筑, 2-物品, 3-事件, 4-建筑高度, 5-物品高度
+  SceneImg: array[0..2303, 0..1401] of uint32;
+  MaskArray: array[0..2303, 0..1401] of smallint;
+  ScenePic: array of Tpic;
+  build: PSDL_Surface;
+  //场景的图形映像. 实时重画场景效率较低, 故首先生成映像, 需要时载入
+  //SceneD: array[0..199, 0..10] of smallint;
+  //当前场景事件
+  BFieldImg: array[0..2303, 0..1401] of uint32;
+  //战场图形映像
+  BField: array[0..7, 0..63, 0..63] of smallint;
+  //战场数据
+  //0-地面, 1-建筑, 2-人物, 3-可否被选中, 4-攻击范围, 5, 6 ,7-未使用
+  Brole: array[0..41] of TBattleRole;
+  //战场人物属性
+  //0-人物序号, 1-敌我, 2, 3-坐标, 4-面对方向, 5-是否仍在战场, 6-可移动步数, 7-是否行动完毕,
+  //8-贴图(未使用), 9-头上显示数字, 10, 11, 12-未使用, 13-已获得经验, 14-是否自动战斗
+  BRoleAmount: integer;
+  //战场人物总数
+  Bx, By, Ax, Ay, TBx, TBy, Tstep: integer;
+  //当前人物坐标, 选择目标的坐标
+  Bstatus: integer;
+  //战斗状态, 0-继续, 1-胜利, 2-失败
+  BshowBWord: Tshowbword; //战斗中显示的文字
+  maxspeed: integer;
+  //LeaveList: array[0..99] of smallint;
+  //EffectList: array[0..199] of smallint;
+  LevelUpList: array[0..99] of smallint;
+  //MatchList: array[0..99, 0..2] of smallint;
+  //各类列表, 前四个从文件读入
+  Water: integer;
+  //是否水下
+  snow: integer;
+  //是否飘雪
+  rain: integer;
+  //是否下雨
+  fog: boolean;
+  //是否有雾
+  showblackscreen: boolean;
+  //是否山洞
+  snowalpha: array[0..439] of array[0..639] of byte;
+  BattleMode: integer;
+  FULLSCREEN: integer;
+  //是否全屏
+  SIMPLE: integer = 0;
+
+  BEGIN_PIC, Maker_Pic,  DEATH_PIC,
+  MENUESC_PIC, MenuescBack_PIC, MAGIC_PIC, STATE_PIC,SYSTEM_PIC, MAP_PIC, SHUPU_PIC, TEAMMATE_PIC,MENUITEM_PIC,
+  MPLINE_PIC,TILILINE_PIC,HPLINE_PIC,HUIKUANG_PIC,HUANGKUANG_PIC,BIAOTIKUANG_PIC,HUIKUANG2_PIC,HUANGKUANG2_PIC,
+  DIZI_PIC,GONGJI_PIC,JIANSHE_PIC,MPNEIGONG_PIC,MPZHUANGTAI_PIC,RENMING_PIC,SONGLI_PIC,YIDONG_PIC,
+  battlepic,MATESIGN_PIC,SELECTEDMATE_PIC, ENEMYSIGN_PIC, SELECTEDENEMY_PIC,
+  PROGRESS_PIC,NowPROGRESS_PIC, angryprogress_pic, angrycollect_pic, angryfull_pic: TBpic;
+  ROLL_PIC:array[0..1] of TBpic;
+  ROLLSTYLE_PIC,WORD_ZHUANGTAI_PIC,WORD_WUGONG_PIC,WORD_XITONG_PIC,WORD_WUPIN_PIC,WORD_SHUPU_PIC,WORD_DUIYOU_PIC: TBpic;
+  WORD_XINGGE_PIC,WORD_XINGGEZY_PIC: TBpic;
+  WORD_XIANGXING_PIC:array[0..9] of TBpic;
+  WORD_YOUHAO_PIC: array[0..7] of TBpic;
+  WORD_AIHAO_PIC: array[0..8] of TBpic;
+  WORD_SYSTEM_PIC:array[0..4] of TBpic;
+  TITLE1_BEGIN_PIC:TBpic;
+  TITLE2_BEGIN_PIC:TBpic;
+  TITLE3_BEGIN_PIC:TBpic;
+  NEW_KMENU_PIC :TBpic;
+  TITLE_BEGIN_PIC:array[0..3] of TBpic;
+  NEW_MENU_BACKGRAND_PIC :TBpic;
+  NEW_MENU_PIC:array of Tpic;
+  RENWU_PIC,WORD_RENWU_PIC:TBpic;
+  HUIKUANG3_PIC,HUANGKUANG3_PIC,BIAOTIKUANG3_PIC:TBpic;
+  DUIWU_XUANZHEKUANG1_PIC,DUIWU_XUANZHEKUANG2_PIC:TBpic;
+  WORD_ZHAOSHI_PIC:array[0..4] of TBpic;
+
+  YOUHAO_PIC: TBpic;
+  WORD_YOUHAO2_PIC :array[0..7] of TBpic;
+  ROLLSTYLE2_PIC:TBpic;
+  ROLL2_PIC:array[0..1] of TBpic;
+
+     Head_Pic: array of Tpic;
+  SkillPIC: array of Tpic;
+  //option exp in snake
+  snake: array of tposition;
+  RANX, RANY: integer;
+  dest: integer;
+  ITEM_PIC: array of Tpic;
+  screen, RealScreen, prescreen: PSDL_Surface;
+  screens:array[0..2] of PSDL_Surface;
+  //主画面, 实际画面, 预备画面
+
+
+  event: TSDL_Event;
+  EventTag,Tryevent:boolean;
+  EventEndCount,TryEventTmpI:integer;
+  //事件
+  Font, Font18,Font16, EngFont, EngFont16: PTTF_Font;
+  TextColor: TSDL_Color;
+  Text: PSDL_Surface;
+  //字体
+
+  menuString, menuEngString, MenuString2, MenuEngString2: array of WideString;
+
+  Bzhaoshi: smallint;
+  //选单所使用的字符串
+
+  x50: array[-$8000..$7FFF] of smallint;
+  //扩充指令50所使用的变量
+  //lua_script: Plua_State;
+  //游戏里的小游戏用到的数组
+  GameArray: array of array of integer;
+  GameSpeed: integer = 10;
+
+  //VOLUMEWAV: integer; //音乐音量 音效音量 是否启用3D音效
+  SOUND3D: integer;
+  SoundFlag: longword;
+  Music: array[0..999] of HSTREAM;
+  ESound: array[0..999] of HSAMPLE;
+  ASound: array[0..999] of HSAMPLE;
+
+  MusicVolume: integer = 64;
+  StartMusic: integer;
+  ExitSceneMusicNum: integer; //离开场景的音乐
+  nowmusic: integer = -1; //正在播放的音乐
+
+  //Music: PMix_music;
+  //ESound: PMix_Chunk;
+  //ASound: PMix_Chunk;
+
+  //战斗用变量
+  CurBRole: integer; //当前战斗人物
+  ShowMR: boolean = True;
+  now2: uint32 = 0;
+  time: smallint = -1;
+  timeevent: smallint = -1;
+  //定时、定时事件
+  rs: integer = 0;
+  //随机事件
+  RandomEvent: smallint = 0;
+  randomcount: integer = 0;
+  Kys_ini: TIniFile;
+  Effect: integer;
+  HighLight: boolean = False; //高亮
+
+  //暂存主角武功
+  magicTemp: array[0..29] of smallint;
+  magicLvTemp: array[0..29] of smallint;
+
+  green: integer = 0;
+  red: integer = 0;
+  yellow: integer = 0;
+  blue: integer = 0;
+  gray: integer = 0;
+
+  versionstr: WideString; //版本号
+  FWay: array[0..479, 0..479] of smallint;
+  linex, liney: array[0..480 * 480 - 1] of smallint;
+  nowstep: integer;
+  SetNum: array[1..5] of array[0..3] of smallint;
+
+  //日期
+  wdate: array[0..4] of smallint;
+
+  //戰鬥是否能夠獲得武功點數
+  isattack: boolean;
+
+
+  //門派武功
+  Rmpmagic: array[0..39] of array[0..399] of smallint;
+  M_IDX: array[0..10] of integer; //M文件指針
+  songli: array of array[0..2] of integer;
+  rdarr1, rdarr2, rdarr3: array[0..9] of smallint;
+  Rtishi: array of Ttishi;
+  Rrenwu: array of Trenwu;
+  RStishi: TSavtishi; //保存提示文字
+  //武技書
+  wujishu: array of smallint;
+
+  //貼士
+  tipsarr: array of WideString;
+  //显示提示暂存类型
+  ShowTips:TShowTips;
+
+  Jxarr: array of WideString;
+  MpBdata: array[0..19] of TMpBdata;
+  mpdiaodu: array of tmpdiaodu;
+  //戰鬥敵人最大兵器值
+  MaxFist, MaxSword, MaxKnife, MaxUnusual,MaxMedcine: integer;
+  S_eventx: integer = -1; //用于限制经过型事件，停留时不会重复触发
+  S_eventy: integer = -1;
+  totalprice: integer; //商店使用，總價
+  RBimage: array of array[0..3] of Tpicdata; //战斗图由出招动画来
+
+  //场景设施人员工作分配数组
+  SceAnpai: array of array[0..12] of smallint;
+  Timetrigger: Ttimetrigger;
+
+  //戰場語錄
+  allbtalk: TallBTalk;
+
+  //视频窗口的flag
+  screenFlag: uint32;
+
+  //是否使用opengl, 是否平滑, 屏幕大小
+  GLHR: integer = 0;
+  SMOOTH: integer = 0;
+  RESOLUTIONX, RESOLUTIONY: integer;
+
+  //退出游戏的提问方式
+  EXIT_GAME: integer;
+  AskingQuit: boolean;
+  //增加人物到下一场战斗
+  xunchou:TXunchou;
+  //50 41指令加强
+  RShowpic:TRShowpic;
+
+  //全局状态变量
+  istwice:boolean;
+  Debug: integer = 0;
+  //福利
+  fuli: smallint = 0;
+  //集氣總數
+  jiqicount: integer;
+  //debug输出
+  debugfile : textfile;
+  debugname : AnsiString = 'debug.txt';
+  debugf:integer;
+const
+  RMask: uint32 = $FF0000;
+  GMask: uint32 = $FF00;
+  BMask: uint32 = $FF;
+  AMask: uint32 = $FF000000;
+
+
+implementation
+
+end.

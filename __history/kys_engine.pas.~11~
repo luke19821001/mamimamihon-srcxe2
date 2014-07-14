@@ -126,16 +126,16 @@ procedure DrawBFieldWithAction(f, bnum, Apicnum: integer);
 // KG新增的函数
 procedure InitNewPic(num, px, py, x, y, w, h: integer; mask: integer = 0);
 procedure display_img(file_name: pAnsiChar; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
-procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: PSDL_Surface; x, y: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(Image: Tpic; x, y: integer); overload;
 function GetPngPic(filename: AnsiString; num: integer): Tpic; overload;
 function GetPngPic(f: integer; num: integer): Tpic; overload;
-procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
-procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 procedure drawPngPic(Image: Tpic; x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 function ReadPicFromByte(p_byte: PByte; size: integer): PSDL_Surface;
@@ -148,7 +148,7 @@ function RoLforUint16(a, n: uint16): uint16; // 循环右移N位
 function RoRforByte(a: byte; n: uint16): byte; // 循环左移N位
 function RoLforByte(a: byte; n: uint16): byte; // 循环右移N位
 procedure DrawEftPic(Pic: Tpic; px, py, level: integer);
-procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
 procedure ZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer);overload;
 function GetZoomPic(scr: PSDL_Surface; angle: double; x, y, w, h: integer): PSDL_Surface;
 function UnicodeToGBK(str: pWideChar): AnsiString;
@@ -325,8 +325,8 @@ begin
 
   for i := low(Music) to high(Music) do
   begin
-    str := AppPath + 'music/' + ansistring(IntToStr(i)) + '.mp3';
-    if FileExists(str) then
+    str := AppPath + 'music/' + IntToStr(i) + '.mp3';
+    if FileExists(pAnsiChar(str)) then
     begin
       try
         Music[i] := BASS_StreamCreateFile(False, pAnsiChar(str), 0, 0, 0);
@@ -336,7 +336,7 @@ begin
     end
     else
     begin
-      str := AppPath + 'music/' + ansistring(IntToStr(i)) + '.mid';
+      str := AppPath + 'music/' + IntToStr(i) + '.mid';
       if FileExists(pAnsiChar(str)) then
       begin
         try
@@ -386,7 +386,7 @@ begin
       if Music[MusicNum] <> 0 then
       begin
         // BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
-        if (MusicNum > -1) and (MusicNum < 1000) then
+        if (nowmusic > -1) and (nowmusic < 1000) then
         begin
           BASS_ChannelStop(Music[nowmusic]);
           BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);
@@ -722,7 +722,7 @@ begin
     SDL_FreeSurface(Image);
   end;
 end;
-procedure display_imgFromSurface(Image: TBpic; x, y, x1, y1, w, h: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y, x1, y1, w, h: integer); overload;
 var
   grp:integer;
 begin
@@ -735,7 +735,7 @@ begin
   end;
   display_imgFromSurface(Image.pic, x, y, x1, y1, w, h);
 end;
-procedure display_imgFromSurface(Image: TBpic; x, y: integer); overload;
+procedure display_imgFromSurface(var Image: TBpic; x, y: integer); overload;
 var
   grp:integer;
 begin
@@ -1962,11 +1962,11 @@ begin
     2:
       DrawBField;
     3:
-      display_imgFromSurface(TITLE2_BEGIN_PIC.Pic, 0, 0);
+      display_imgFromSurface(TITLE2_BEGIN_PIC, 0, 0);
     4:
-      display_imgFromSurface(DEATH_PIC.Pic, 0, 0);
+      display_imgFromSurface(DEATH_PIC, 0, 0);
     6:
-      display_imgFromSurface(TITLE1_BEGIN_PIC.Pic, 0, 0);
+      display_imgFromSurface(TITLE1_BEGIN_PIC, 0, 0);
   end;
   if RShowpic.repeated > 0 then
   begin
@@ -1993,7 +1993,6 @@ begin
 end;
 
 // 显示主地图场景于屏幕
-
 procedure DrawMMap;
 var
   i1, i2, i, sum, x, y, k, c, widthregion, sumregion, num, h, MPicAmount: integer;
@@ -2108,6 +2107,120 @@ begin
     end;
   end;
 end;
+{procedure DrawMMap;
+var
+  i1, i2, i, sum, x, y, k, c, widthregion, sumregion, num, h, MPicAmount: integer;
+  // temp: array[0..479, 0..479] of smallint;
+  Width, Height, xoffset, yoffset: smallint;
+  pos: TPosition;
+  BuildArray: array [0 .. 2000] of TBuildInfo;
+  tempb: TBuildInfo;
+  tempscr, tempscr1: PSDL_Surface;
+  dest: TSDL_Rect;
+begin
+  // 由上到下绘制, 先绘制地面和表面, 同时计算出现的建筑数
+  k := 0;
+  h := High(BuildArray);
+  MPicAmount := High(midx);
+  widthregion := CENTER_X div 36 + 3;
+  sumregion := CENTER_Y div 9 + 2;
+  for sum := -sumregion to sumregion + 15 do
+    for i := -widthregion to widthregion do
+    begin
+      if k >= h then
+        break;
+      i1 := Mx + i + (sum div 2);
+      i2 := My - i + (sum - sum div 2);
+      pos := GetPositionOnScreen(i1, i2, Mx, My);
+      if (i1 >= 0) and (i1 < 480) and (i2 >= 0) and (i2 < 480) then
+      begin
+        DrawMPic(earth[i1, i2] div 2, pos.x, pos.y);
+        if surface[i1, i2] > 0 then
+          DrawMPic(surface[i1, i2] div 2, pos.x, pos.y);
+        num := building[i1, i2] div 2;
+        // 将主角和空船的位置计入建筑
+        if (i1 = Mx) and (i2 = My) then
+        begin
+          if (InShip = 0) then
+          begin
+            if still = 0 then
+              num := 5001 + MFace * 7 + MStep
+            else
+              num := 5028 + MFace * 6 + MStep;
+          end
+          else
+          begin
+            num := 3714 + MFace * 4 + (MStep + 1) div 2;
+          end;
+        end;
+        if (i1 = shipy) and (i2 = shipx) then
+        begin
+          if (InShip = 0) then
+          begin
+            num := 3715 + ShipFace * 4;
+          end;
+        end;
+        if (num > 0) and (num < MPicAmount) then
+        begin
+          BuildArray[k].x := i1;
+          BuildArray[k].y := i2;
+          BuildArray[k].b := num;
+          Width := smallint(Mpic[midx[num - 1]]);
+          Height := smallint(Mpic[midx[num - 1] + 2]);
+          yoffset := smallint(Mpic[midx[num - 1] + 6]);
+          xoffset := smallint(Mpic[midx[num - 1] + 4]);
+          // 根据图片的宽度计算图的中点的坐标和作为排序依据
+          // y坐标为第二依据
+          // BuildArray[k].c := (i1 + i2) - (Width + 35) div 36 - (yoffset - Height + 1) div 9;
+          BuildArray[k].c := ((i1 + i2) - (Width + 35) div 36 - (yoffset - Height + 1) div 9) * 1024 + i2;
+          if (i1 = Mx) and (i2 = My) then
+            BuildArray[k].c := (i1 + i2) * 1024 + i2;
+          k := k + 1;
+        end;
+      end
+      else
+        DrawMPic(0, pos.x, pos.y);
+    end;
+  QuickSortB(BuildArray, 0, k - 1);
+  for i := 0 to k - 1 do
+  begin
+    pos := GetPositionOnScreen(BuildArray[i].x, BuildArray[i].y, Mx, My);
+    DrawMPic(BuildArray[i].b, pos.x, pos.y);
+  end;
+  drawdate;
+  for i := 0 to Showtips.num - 1 do
+  begin
+    if Showtips.y[i] < Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] + 5;
+      if Showtips.y[i] > Showtips.yadd[i] then
+        Showtips.yadd[i] := Showtips.yadd[i];
+    end
+    else if Showtips.y[i] > Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] - 5;
+      if Showtips.y[i] < Showtips.yadd[i] then
+        Showtips.yadd[i] := Showtips.yadd[i];
+    end;
+    if (Showtips.str[i] <> '') then
+    begin
+      if not Showtips.surCreated[i] then
+      begin
+        //Showtips.sur[i] := SDL_CreateRGBSurface(0, length(Showtips.str[i]) * 20, 20, 32, 0, 0, 0, 0);
+        Showtips.sur[i] := SDL_CreateRGBSurface(0, screen.w * 2, 20, 32, 0, 0, 0, 0);
+        DrawText(Showtips.sur[i], @Showtips.str[i][1], 0, 0, ColColor($5));
+        SDL_SetAlpha(Showtips.sur[i], SDL_SRCALPHA, 128);
+        Showtips.surCreated[i] := true;
+      end
+      else
+      begin
+        dest.x := Showtips.x[i];
+        dest.y := Showtips.y[i];
+        SDL_BlitSurface(Showtips.sur[i], nil, screen, @dest);
+      end;
+    end;
+  end;
+end; }
 
 procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
 var
@@ -2139,7 +2252,6 @@ end;
 
 
 // 画场景到屏幕
-
 procedure DrawScene;
 var
   i, x, y, xpoint, ypoint: integer;
@@ -2207,6 +2319,73 @@ begin
   end;
 
 end;
+{procedure DrawScene;
+var
+  i, x, y, xpoint, ypoint: integer;
+  dest: TSDL_Rect;
+  word, worddate: WideString;
+begin
+  // 先画无主角的场景, 再画主角
+  // 如在事件中, 则以Cx, Cy为中心, 否则以主角坐标为中心
+  if (CurEvent < 0) then
+  begin
+    DrawSceneWithoutRole(Sx, Sy);
+    DrawRoleOnScene(Sx, Sy);
+  end
+  else
+  begin
+    DrawSceneWithoutRole(Cx, Cy);
+    if (DData[CurScene, CurEvent, 10] = Sx) and (DData[CurScene, CurEvent, 9] = Sy) then
+    begin
+      if (DData[CurScene, CurEvent, 4] <> BEGIN_EVENT) then
+      begin
+        DrawRoleOnScene(Cx, Cy);
+      end;
+    end
+    else
+      DrawRoleOnScene(Cx, Cy);
+  end;
+  drawdate;
+  for i := 0 to Showtips.num - 1 do
+  begin
+    if Showtips.y[i] < Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] + 5;
+      if Showtips.y[i] > Showtips.yadd[i] then
+        Showtips.y[i] := Showtips.yadd[i];
+    end
+    else if Showtips.y[i] > Showtips.yadd[i] then
+    begin
+      Showtips.y[i] := Showtips.y[i] - 5;
+      if Showtips.y[i] < Showtips.yadd[i] then
+        Showtips.y[i] := Showtips.yadd[i];
+    end;
+    if (Showtips.str[i] <> '') then
+    begin
+      if not Showtips.surCreated[i] then
+      begin
+        //Showtips.sur[i] := SDL_CreateRGBSurface(0, length(Showtips.str[i]) * 20, 20, 32, 0, 0, 0, 0);
+        Showtips.sur[i] := SDL_CreateRGBSurface(0, screen.w * 2, 20, 32, 0, 0, 0, 0);
+        DrawText(Showtips.sur[i], @Showtips.str[i][1], 0, 0, ColColor($5));
+        SDL_SetAlpha(Showtips.sur[i], SDL_SRCALPHA, 128);
+        Showtips.surCreated[i] := true;
+      end
+      else
+      begin
+        dest.x := Showtips.x[i];
+        dest.y := Showtips.y[i];
+        SDL_BlitSurface(Showtips.sur[i], nil, screen, @dest);
+      end;
+
+    end;
+  end;
+  if time > 0 then
+  begin
+    word := formatfloat('0', time div 60) + ':' + formatfloat('00', time mod 60);
+    DrawShadowText(@word[1], 5, 5, ColColor(0, 5), ColColor(0, 7));
+  end;
+
+end; }
 
 
 // 画不含主角的场景(与DrawSceneByCenter相同)
@@ -3164,7 +3343,7 @@ begin
   Result.Pic := ReadPicFromByte(@Data[0], len);
   FileClose(f);
 end;
-procedure drawPngPic(Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic; px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3177,7 +3356,7 @@ begin
   end;
   drawPngPic(Image.pic, 0, 0, Image.Pic.pic.w, Image.Pic.pic.h, px, py, mask, maskvalue);
 end;
-procedure drawPngPic(Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
+procedure drawPngPic(var Image: TBpic;x, y, w, h, px, py, mask: integer; maskvalue: smallint = 0); overload;
 var
   grp:integer;
 begin
@@ -3439,7 +3618,7 @@ begin
   SDL_FreeSurface(pic1.Pic);
 end;
 
-procedure ZoomPic(scr: TBpic; angle: double; x, y, w, h: integer);overload;
+procedure ZoomPic(var scr: TBpic; angle: double; x, y, w, h: integer);overload;
 var
   grp:integer;
   a, b: double;
@@ -3712,7 +3891,6 @@ procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
 var
   realx, realy, realw, realh, ZoomType: integer;
   tempscr: PSDL_Surface;
-  now, Next: uint32;
   dest: TSDL_Rect;
   TextureID: GLUint;
 begin
@@ -3809,9 +3987,7 @@ begin
 end;
 
 procedure QuitConfirm;
-var
-  tempscr: PSDL_Surface;
-  menuString: array [0 .. 1] of WideString;
+
 begin
   if (EXIT_GAME = 0) or (AskingQuit = True) then
   begin
@@ -3842,7 +4018,7 @@ end;
 
 procedure CheckBasicEvent;
 var
-  i, x, y: integer;
+  x, y: integer;
 begin
   // if not (LoadingScence) then
   case event.type_ of

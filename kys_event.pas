@@ -53,7 +53,7 @@ function instruct_29(rnum, r1, r2, jump1, jump2: integer): integer;
 procedure instruct_30(y1, x1, y2, x2: integer);
 function instruct_31(moneynum, jump1, jump2: integer): integer;
 procedure instruct_32(inum, amount: integer);
-procedure instruct_33(rnum, magicnum, dismode, check: integer);
+procedure instruct_33(rnum, magicnum, dismode, check: integer; eat: boolean = true);
 procedure instruct_34(rnum, iq: integer);
 procedure instruct_35(rnum, magiclistnum, magicnum, exp: integer);
 function instruct_36(sexual, jump1, jump2: integer): integer;
@@ -786,10 +786,10 @@ begin
   begin
 
     if (SDL_MUSTLOCK(screen)) then
-    begin
+    begin                               
       if (SDL_LockSurface(screen) < 0) then
       begin
-        MessageBox(0, pWideChar(format('Can''t lock screen : %s',
+        MessageBox(0, pChar(format('Can''t lock screen : %s',
           [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
         exit;
       end;
@@ -1215,7 +1215,7 @@ end;
 
 // 学到武功, 如果已有武功则升级, 如果已满10个不会洗武功
 
-procedure instruct_33(rnum, magicnum, dismode ,check: integer);
+procedure instruct_33(rnum, magicnum, dismode ,check: integer; eat: boolean = true);
 var
   key :boolean;
   str:widestring;
@@ -1241,7 +1241,7 @@ begin
   end;
   if key then
   begin
-    if (Rmagic[magicnum].miji >= 0) then
+    if (Rmagic[magicnum].miji >= 0) and (eat) then
     begin
       eatoneitem(rnum,Rmagic[magicnum].miji,false);
     end;
@@ -4164,7 +4164,6 @@ begin
       break;
   end;
   Redraw;
-
   setlength(wd, 0);
   setlength(str, 0);
   setlength(temp2, 0);

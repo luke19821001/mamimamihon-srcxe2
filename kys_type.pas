@@ -12,10 +12,10 @@ uses
 type
   TShowTips = record
     num:integer;
-    str:array of widestring;
-    x,y,yadd:array of smallint;
-    SurCreated:array of boolean;
-    Sur: array of PSDL_Surface;
+    str:array[0..4] of widestring;
+    x,y,yadd:array[0..4] of smallint;
+    SurCreated:array[0..4] of boolean;
+    Sur: array[0..4] of PSDL_Surface;
   end;
   TRShowpic = record
     repeated,tp,pnum,x,y:smallint;
@@ -270,7 +270,7 @@ type
   end;
   TTmpZYdui = record
     len,duizhang:smallint;
-    duiyuan:array of smallint;
+    duiyuan:array[0..9] of smallint;
   end;
   TBZaotui = record
     rnum, snum, btnum: smallint;

@@ -177,7 +177,6 @@ begin
   CurrentBattle := battlenum;
   SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
   BshowBWord.sign := 0;
-
   if (InitialBField(mods, id, enemyrnum) and (mods > -2)) then
   begin
     //如果未发现自动战斗设定, 则选择人物
@@ -800,12 +799,12 @@ end;
 
 function InitialBField(mods, id, enemyrnum: integer): boolean; overload;
 var
-  sta, grp, autocount, idx, offset, l, i, i1, i2, j, j1, x, y, k,fieldnum, k1, len0, len1, len, n0: integer;
+  sta, grp, autocount, idx, offset, l, i, i1, i2, j, j1, x, y, k,fieldnum, k1, len0, len1, len, n, n0, n1, n2: integer;
   p: puint16;
   cc: uint16;
   trnum: array of smallint;
   pos1:Tposition;
-  MYtmpzydui:array of TTmpzydui;
+  MYtmpzydui:array[0..9] of TTmpzydui;
   Tmpzydui1,Tmpzydui2:TTmpzydui;
 begin
   Tmpzydui1.len:=0;
@@ -946,9 +945,25 @@ begin
         begin
           if (Rrole[i].dtime < 5) then
           begin
-            setlength(trnum, len + 1);
-            trnum[len] := i;
-            Inc(len);
+            inc(len);
+          end;
+        end;
+      end;
+    end;
+    setlength(trnum, len);
+    n:=0;
+
+    for i := 1 to length(Rrole) - 1 do
+    begin
+      if (Rrole[i].menpai = Rscene[mpbdata[id].snum].menpai) then
+      begin
+         if (Rrole[i].weizhi = mpbdata[id].snum) and
+         (not (Rrole[i].TeamState in [1, 2])) then
+        begin
+          if (Rrole[i].dtime < 5) then
+          begin
+            trnum[n] := i;
+            Inc(n);
           end
           else if ((Rrole[i].nweizhi = 16) and (Rrole[i].lsweizhi <> mpbdata[id].snum) and (Rrole[i].weizhi = mpbdata[id].snum)) or ((Rrole[i].dtime < 1000)) then //防守场景有外出人员，加入增援
           begin
@@ -958,56 +973,72 @@ begin
             end
             else if (Tmpzydui1.duizhang >= 0) and (Rmenpai[Rrole[i].menpai].zmr = i) then
             begin
-              setlength(Tmpzydui1.duiyuan, Tmpzydui1.len + 1);
               Tmpzydui1.duiyuan[Tmpzydui1.len] := Tmpzydui1.duizhang;
               Inc(Tmpzydui1.len);
+              if Tmpzydui1.len >9 then
+              begin
+                Tmpzydui1.len := 9;
+              end;
               Tmpzydui1.duizhang := i;
             end
             else
             begin
-              setlength(Tmpzydui1.duiyuan, Tmpzydui1.len + 1);
               Tmpzydui1.duiyuan[Tmpzydui1.len] := i;
               Inc(Tmpzydui1.len);
+              if Tmpzydui1.len >9 then
+              begin
+                Tmpzydui1.len := 9;
+              end;
             end;
           end;
         end;
       end;
     end;
     addzengyuanarr(Tmpzydui1,id,Rscene[mpbdata[id].snum].menpai,mpbdata[id].snum);
+    n1:=0;
     for i:= 0 to length(Rmenpai) - 1 do
     begin
       if ismengyou(i,Rscene[mpbdata[id].snum].menpai) then
       begin
-        setlength(Mytmpzydui,len1 + 1);
-        Mytmpzydui[len1].duizhang:=-1;
-        Mytmpzydui[len1].len:=0;
+        Mytmpzydui[n1].duizhang:=-1;
+        Mytmpzydui[n1].len:=0;
         for i1:= 0 to length(Rrole) - 1 do
         begin
           if (Rrole[i1].dtime < 10) and (Rrole[i1].menpai = i) then
           begin
             if (random(1000) < Rmenpai[i].guanxi[Rscene[mpbdata[id].snum].menpai]) then
             begin
-              if (Mytmpzydui[len1].duizhang < 0) and ((Rmenpai[Rrole[i1].menpai].zmr = i1) or (is_hufa(i1))) then
+              if (Mytmpzydui[n1].duizhang < 0) and ((Rmenpai[Rrole[i1].menpai].zmr = i1) or (is_hufa(i1))) then
               begin
-                Mytmpzydui[len1].duizhang := i1;
+                Mytmpzydui[n1].duizhang := i1;
               end
-              else if (Mytmpzydui[len1].duizhang >= 0) and (Rmenpai[Rrole[i1].menpai].zmr = i1) then
+              else if (Mytmpzydui[n1].duizhang >= 0) and (Rmenpai[Rrole[i1].menpai].zmr = i1) then
               begin
-                setlength(Mytmpzydui[len1].duiyuan, Mytmpzydui[len1].len + 1);
-                Mytmpzydui[len1].duiyuan[Mytmpzydui[len1].len] := Mytmpzydui[len1].duizhang;
-                Inc(Mytmpzydui[len1].len);
-                Mytmpzydui[len1].duizhang := i1;
+                Mytmpzydui[n1].duiyuan[Mytmpzydui[n1].len] := Mytmpzydui[n1].duizhang;
+                Inc(Mytmpzydui[n1].len);
+                if Mytmpzydui[n1].len > 9 then
+                begin
+                  Mytmpzydui[n1].len:=9;
+                end;
+                Mytmpzydui[n1].duizhang := i1;
               end
               else
               begin
-                setlength(Mytmpzydui[len1].duiyuan, Mytmpzydui[len1].len + 1);
-                Mytmpzydui[len1].duiyuan[Mytmpzydui[len1].len] := i1;
-                Inc(Mytmpzydui[len1].len);
+                Mytmpzydui[n1].duiyuan[Mytmpzydui[n1].len] := i1;
+                Inc(Mytmpzydui[n1].len);
+                if Mytmpzydui[n1].len > 9 then
+                begin
+                  Mytmpzydui[n1].len:=9;
+                end;
               end;
             end;
           end;
         end;
-        inc(len1);
+        inc(n1);
+        if n1 > 9 then
+        begin
+          n1:=9;
+        end;
       end;
     end;
     for i:=0 to length(Mytmpzydui) - 1 do
@@ -1016,20 +1047,26 @@ begin
     end;
     if len > 0 then levsort(trnum);
     len := length(mpbdata[id].BTeam[1].rolearr);
+    if len <= 0 then
+    begin
+      len := 0;
+    end;
+    n2:=len;
     for i := 0 to length(trnum) - 1 do
     begin
-      if len <= 0 then
-      begin
-        len := 0;
-      end;
-      setlength(mpbdata[id].BTeam[1].RoleArr, len + 1);
-      mpbdata[id].BTeam[1].RoleArr[len].rnum := trnum[i];
-      mpbdata[id].BTeam[1].RoleArr[len].snum := Rrole[trnum[i]].weizhi;
-      mpbdata[id].BTeam[1].RoleArr[len].isin := 0;
+      Inc(len);
+    end;
+    setlength(mpbdata[id].BTeam[1].RoleArr, len);
+    for i := 0 to length(trnum) - 1 do
+    begin
+
+      mpbdata[id].BTeam[1].RoleArr[n2].rnum := trnum[i];
+      mpbdata[id].BTeam[1].RoleArr[n2].snum := Rrole[trnum[i]].weizhi;
+      mpbdata[id].BTeam[1].RoleArr[n2].isin := 0;
       Rrole[trnum[i]].nweizhi := 16;
       Rrole[trnum[i]].dtime := 1000;
       Rrole[trnum[i]].btnum:= id;
-      Inc(len);
+      Inc(n2);
     end;
   end;
   k1 := 0;
@@ -1526,6 +1563,24 @@ begin
       end;
     end;
   end;
+  i:=0;
+  settips;
+  while(true) do
+  begin
+    if i >= ShowTips.num then
+    begin
+      break;
+    end;
+    if ShowTips.x[i] < -400 then
+    begin
+      dectips(i);
+    end
+    else
+    begin
+      Dec(ShowTips.x[i], 3);
+    end;
+    inc(i);
+  end;
   showprogress;
   Inc(jiqicount);
   if (jiqicount mod 100 = 0) and (mods < -1) then
@@ -1633,10 +1688,11 @@ begin
       x50[28005] := i;
       if (jiqicount mod 5 = 0) and (mods < -1) then
       begin
-
+        if (debug = 1) then
+        begin
           writeln(debugfile,'增援-1:战场'+inttostr(id)+',增援id'+inttostr(zyid));
           flush(debugfile);
-
+        end;
         zengyuan(-1, id,zyid);
       end;
       isattack := False;
@@ -1686,10 +1742,11 @@ begin
               end;
             end;
             zy0[j1][0] := -1;
-
+            if (debug = 1) then
+            begin
               writeln(debugfile,'增援0:战场'+inttostr(id)+',增援id'+inttostr(zyid));
               flush(debugfile);
-
+            end;
             zengyuan(0, id,zyid);
           end;
           if (zy1[j1][0] > -1) and (random(10 * zy1[j1][1] + 500 - jiqicount) < 5) then
@@ -1729,11 +1786,11 @@ begin
               end;
             end;
             zy1[j1][0] := -1;
-            //if (debug = 1) then
-            //begin
+            if (debug = 1) then
+            begin
               writeln(debugfile,'增援1:战场'+inttostr(id)+',增援id'+inttostr(zyid));
               flush(debugfile);
-            //end;
+            end;
             zengyuan(1, id,zyid);
           end;
         end;
@@ -1995,14 +2052,14 @@ begin
         end
         else
         begin
-          //if (debug = 1) then
-          //begin
+          if (debug = 1) then
+          begin
             writeln(debugfile,'自动战斗'+inttostr(i));
             flush(debugfile);
-          //end;
+          end;
           AutoBattle2(i);
           Brole[i].Acted := 1;
-          //if (debug = 1) then
+          if (debug = 1) then
           begin
             writeln(debugfile,'自动战斗结束'+inttostr(i));
             flush(debugfile);
@@ -2042,7 +2099,7 @@ begin
       Redraw;
       showprogress;
       x50[28101] := BRoleAmount;
-      //if (debug = 1) then
+      if (debug = 1) then
       begin
         writeln(debugfile,'计算移动力');
         flush(debugfile);
@@ -2487,9 +2544,9 @@ begin
   word[11] := '自動';
   Redraw;
   DrawRectangle(10, 50, 80, 28, 0, ColColor(0, 255), 30);
-  str := ' 第' + IntToStr(Brole[bnum].round) + '回';
+  str1 := ' 第' + IntToStr(Brole[bnum].round) + '回';
   //str1 := GBKtoUnicode(@str[1]);
-  DrawShadowText(@str[1], 10 - 17, 50 + 2, ColColor(0, 5), ColColor(0, 7));
+  DrawShadowText(@str1[1], 10 - 17, 50 + 2, ColColor(0, 5), ColColor(0, 7));
   ShowSimpleStatus(Brole[bnum].rnum, 30, 330);
   showprogress;
 
@@ -5450,7 +5507,7 @@ begin
   Rrole[rnum].CurrentHP := Rrole[rnum].CurrentHP - (needmp * Rrole[rnum].Hurt) div 100;
 
   //某些状态不耗费体力  1 不耗费体力
-  if (not GetGongtiState(rnum, 1)) and (not GetEquipState(rnum, 1)) then
+  if (not GetGongtiState(rnum, 1)) and (not GetEquipState(rnum, 1)) and (not(istwice)) then
   begin
     Rrole_a[rnum].PhyPower := Rrole_a[rnum].PhyPower - 3;
     Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - 3;
@@ -5742,9 +5799,9 @@ begin
     if Rmagic[mnum].WeaponModulus > 0 then
       Result := Result + trunc(mhurt * w1 * (Rmagic[mnum].WeaponModulus * 2 / p));
   end;
-  Result := Result * (Rrole[rnum1].PhyPower + 300) div 400;
+  Result := Result * (Rrole[rnum1].PhyPower + 500) div 600;
   if Result > 0 then
-    Result := round(power(Result,0.9));
+    Result := round(power(Result,0.93));
   Result := Result + random(10) - random(10);
   if Result < mhurt div 20 then
     Result := mhurt div 20 + random(5) - random(5);
@@ -6399,7 +6456,7 @@ begin
         end;
         tmpe:= Rrole[rnum].Exp;
         Rrole[rnum].Exp := Rrole[rnum].Exp + add1 * (100 + zhiwujc6) div 100;
-        Rrole[rnum].Exp := min(Rrole[rnum].Exp, 35000);
+        Rrole[rnum].Exp := min(Rrole[rnum].Exp, 30000);
         Rrole_a[rnum].Exp := uint16(Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmpe);
         //if not ((Rrole[rnum].PracticeBook >= 0) and (ritem[Rrole[rnum].PracticeBook].Magic >= 0) and (rmagic[ritem[Rrole[rnum].PracticeBook].Magic].MagicType = 5)) then
         //Rrole[rnum].GongtiExam := Rrole[rnum].GongtiExam + add1 * 2 *(100+zhiwujc6)div 500;
@@ -6470,7 +6527,7 @@ begin
         end;
         tmpe:= Rrole[rnum].Exp;
         Rrole[rnum].Exp := Rrole[rnum].Exp + add2;
-        Rrole[rnum].Exp := min(Rrole[rnum].Exp, 35000);
+        Rrole[rnum].Exp := min(Rrole[rnum].Exp, 30000);
         Rrole_a[rnum].Exp := uint16(Rrole_a[rnum].Exp + Rrole[rnum].Exp - tmpe);
         //if not ((Rrole[rnum].PracticeBook >= 0) and (ritem[Rrole[rnum].PracticeBook].Magic >= 0) and (rmagic[ritem[Rrole[rnum].PracticeBook].Magic].MagicType = 5)) then
         //Rrole[rnum].GongtiExam := Rrole[rnum].GongtiExam + add2 * 2 div 5;
@@ -6622,7 +6679,7 @@ begin
 
           if mnum > 0 then
           begin
-            instruct_33(rnum, mnum, 1,0);
+            instruct_33(rnum, mnum, 1,0,false);
             str := IntToStr(GetMagicLevel(rnum, mnum) div 100 + 1);
             DrawRectangle(100, 70 - 30, 200, 25, 0, ColColor(255), 25);
 
@@ -9646,13 +9703,14 @@ begin
   modestring[2] := '治療型';
   modestring[-1] := '手动';
   str := ' 确定';
+  setlength(namestr, 24);
+  setlength(a, 24);
   for i := 0 to length(Brole) - 1 do
   begin
     if (Brole[i].Team = 0) and (Brole[i].rnum >= 0) and (Brole[i].Dead = 0) and (Brole[i].Auto < 3) then
     begin
       amount := amount + 1;
-      setlength(namestr, amount);
-      setlength(a, amount);
+
       namestr[amount - 1] := '' + gbktounicode(@Rrole[Brole[i].rnum].Name[0]);
       a[amount - 1] := Brole[i].Auto;
     end;

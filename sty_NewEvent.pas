@@ -443,7 +443,7 @@ begin
                             - needexp div 2;
                           Dec(Rrole[tudi].ExpForBook, needexp div 2);
                           Dec(Rrole[shifu].ExpForBook, needexp div 2);
-                          instruct_33(tudi, sfmag[menu], 1,0);
+                          instruct_33(tudi, sfmag[menu], 1,0,false);
 
                           // 取消，改為吃書
 
@@ -490,7 +490,7 @@ begin
                             - needexp div 2;
                           Dec(Rrole[tudi].ExpForBook, needexp div 2);
                           Dec(Rrole[shifu].ExpForBook, needexp div 2);
-                          instruct_33(tudi, sfmag[menu], 1,0);
+                          instruct_33(tudi, sfmag[menu], 1,0,false);
                           // 取消，改為吃書
 
                           EatOneItem(tudi, Rmagic[sfmag[menu]].miji, True);
@@ -647,7 +647,7 @@ begin
                             - needexp div 2;
                           Dec(Rrole[tudi].ExpForBook, needexp div 2);
                           Dec(Rrole[shifu].ExpForBook, needexp div 2);
-                          instruct_33(tudi, sfmag[menu], 1,0);
+                          instruct_33(tudi, sfmag[menu], 1,0,false);
 
                           // 取消，改為吃書
 
@@ -694,7 +694,7 @@ begin
                             - needexp div 2;
                           Dec(Rrole[tudi].ExpForBook, needexp div 2);
                           Dec(Rrole[shifu].ExpForBook, needexp div 2);
-                          instruct_33(tudi, sfmag[menu], 1,0);
+                          instruct_33(tudi, sfmag[menu], 1,0,false);
                           // 取消，改為吃書
 
                           EatOneItem(tudi, Rmagic[sfmag[menu]].miji, True);
@@ -5980,8 +5980,7 @@ begin
                   Redraw;
                   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
                   NewTalk(0, 201, -2, 0, 0, 0, 0, 1);
-
-                  clearrole(snum, -1);
+                  clearrole(CurScene, -1);
                   if Battle(0, 0, -3, battle_id) then
                     NewTalk(0, 202, -2, 0, 0, 0, 0, 1)
                   else
@@ -6108,7 +6107,7 @@ begin
                   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
                   NewTalk(0, 201, -2, 0, 0, 0, 0, 1);
 
-                  clearrole(snum, -1);
+                  clearrole(CurScene, -1);
                   if Battle(0, 0, -3, battle_id) then
                     NewTalk(0, 202, -2, 0, 0, 0, 0, 1)
                   else
@@ -7000,8 +6999,11 @@ var
 begin
   Result := jump2;
   btnum := random(70) + 1;
-  writeln(debugfile, '随机切磋BTNUM' + IntToStr(btnum)+'rnum:'+ IntToStr(rnum)+'JUMP1:'+ IntToStr(jump1) +'JUMP2:'+ IntToStr(jump2));
-  flush(debugfile);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '随机切磋BTNUM' + IntToStr(btnum)+'rnum:'+ IntToStr(rnum)+'JUMP1:'+ IntToStr(jump1) +'JUMP2:'+ IntToStr(jump2));
+    flush(debugfile);
+  end;
   if rnum > -1 then
   begin
     if Battle(btnum, 1, 0, -1, 0, rnum) then
@@ -7025,14 +7027,20 @@ begin
     k := k - 1;
     if k < 0 then
       exit;
-    writeln(debugfile, '开始排序');
-    flush(debugfile);
+    if (debug = 1) then
+    begin
+      writeln(debugfile, '开始排序');
+      flush(debugfile);
+    end;
     levsort(trnum);
     k1 := -1;
 
     zjmvalue := RoleValue(0, 1);
-    writeln(debugfile, '计算主角强度：' + IntToStr(round(zjmvalue)));
-    flush(debugfile);
+    if (debug = 1) then
+    begin
+      writeln(debugfile, '计算主角强度：' + IntToStr(round(zjmvalue)));
+      flush(debugfile);
+    end;
     for i := k downto 0 do
     begin
       mvalue := RoleValue(trnum[i], 1);
@@ -7050,8 +7058,11 @@ begin
     if k1 + k2 > k then
       k2 := k - k1 + 1;
     rrnum := trnum[k1 + random(k2)];
-    writeln(debugfile, '对战：' + IntToStr(rrnum));
-    flush(debugfile);
+    if (debug = 1) then
+    begin
+      writeln(debugfile, '对战：' + IntToStr(rrnum));
+      flush(debugfile);
+    end;
     if Battle(btnum, 1, 0, -1, 0, rrnum) then
       Result := jump1;
   end;
@@ -7267,11 +7278,11 @@ begin
     tmp0 := Rrole[0].MagLevel[tmp[tm]];
     ltmp := Rrole[0].MagLevel[tmp[tm]];
     Inc(Rrole[0].MagLevel[tmp[tm]],
-      round((Rrole[0].level * 3 + 30 - ltmp div 10) * (100 + random(100)) *
+      round((Rrole[0].level * 3 + 30 - ltmp div 15) * (100 + random(100)) *
       (100 + zhiwujc6) / 50000));
     if random(150) < (Aptitude + 50) then
       Inc(Rrole[0].MagLevel[tmp[tm]],
-        round((Rrole[0].level * 3 + 30 - ltmp div 10) * (100 + random(100)) *
+        round((Rrole[0].level * 3 + 30 - ltmp div 15) * (100 + random(100)) *
         (100 + zhiwujc6) / 50000));
     if Rrole[0].MagLevel[tmp[tm]] > 999 then
       Rrole[0].MagLevel[tmp[tm]] := 999;
@@ -7508,8 +7519,9 @@ begin
     end;
     if n > 0 then
     begin
-      tmp0 := Rrole[0].MagLevel[tmp[tm]];
+
       tm := random(n);
+      tmp0 := Rrole[0].MagLevel[tmp[tm]];
       ltmp := Rrole[0].MagLevel[tmp[tm]];
       Inc(Rrole[0].MagLevel[tmp[tm]],
         round((Rrole[0].level div 3 + 10) * (100 + random(100)) *
@@ -7523,6 +7535,15 @@ begin
       if ((Rrole[0].MagLevel[tmp[tm]] div 100) > (ltmp div 100)) then
       begin
         EatOneItem(0, Rmagic[Rrole[0].lmagic[tmp[tm]]].miji, True);
+        tmp0:=Rrole[0].MaxHP;
+        inc(Rrole[0].MaxHP, Rmagic[Rrole[0].lmagic[Rrole[0].gongti]].Addhp[Rrole[0].MagLevel[tmp[tm]] div 100]
+         - Rmagic[Rrole[0].lmagic[Rrole[0].gongti]].Addhp[ltmp div 100]);
+        Rrole_a[0].MaxHP := Rrole_a[0].MaxHP + Rrole[0].MaxHP - tmp0;
+
+        tmp0:=Rrole[0].MaxMP;
+        inc(Rrole[0].MaxMP, Rmagic[Rrole[0].lmagic[Rrole[0].gongti]].Addmp[Rrole[0].MagLevel[tmp[tm]] div 100]
+         - Rmagic[Rrole[0].lmagic[Rrole[0].gongti]].Addmp[ltmp div 100]);
+        Rrole_a[0].MaxMP := Rrole_a[0].MaxMP + Rrole[0].MaxMP - tmp0;
         if Rrole[0].MagLevel[tmp[tm]] div 100 >= 2 then
           if Rrole[0].PracticeBook >= 0 then
             if Ritem[Rrole[0].PracticeBook].magic = Rrole[0].lmagic[tmp[tm]]
@@ -9109,7 +9130,7 @@ var
     n, namelen, i, t1, grp, idx, offset, len, i1, i2, face, c, nx, ny, hx, hy,
     hw, hh, x, y, w, h, cell, row: integer;
   np3, np, np1, np2, np4, tp, p1, pp1, ap, app,kp: pAnsiChar;
-  actorarray, actorarray1, talkarray, namearray, name1, name2,kname: array of byte;
+  actorarray, actorarray1, talkarray, namearray, name1, name2,kname: array[0..500] of byte;
   pword: array [0 .. 1] of uint16;
   wd, str: AnsiString;
   na2: array [0 .. 9] of AnsiChar;
@@ -9161,8 +9182,11 @@ begin
     hy := 159;
 
   end;
-  writeln(debugfile, '读取对话' + IntToStr(talknum));
-  flush(debugfile);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '读取对话' + IntToStr(talknum));
+    flush(debugfile);
+  end;
   // read talk
   idx := FileOpen(TALK_IDX, fmopenread);
   grp := FileOpen(TALK_GRP, fmopenread);
@@ -9178,13 +9202,16 @@ begin
     FileRead(idx, len, 4);
   end;
   len := (len - offset);
-  setlength(talkarray, len + 2);
+  //setlength(talkarray, len + 2);
   FileSeek(grp, offset, 0);
   FileRead(grp, talkarray[0], len);
   FileClose(idx);
   FileClose(grp);
-  writeln(debugfile, '读取对话完成' + IntToStr(talknum));
-  flush(debugfile);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '读取对话完成' + IntToStr(talknum));
+    flush(debugfile);
+  end;
   for i := 0 to len - 1 do
   begin
     talkarray[i] := talkarray[i] xor $FF;
@@ -9198,17 +9225,23 @@ begin
 
   if rnum < 0 then
   begin
-    writeln(debugfile, '开始查找RNUM' + IntToStr(rnum)+'X:'+ IntToStr(ex) +'Y:'+ IntToStr(ey));
-    flush(debugfile);
+    if (debug = 1) then
+    begin
+      writeln(debugfile, '开始查找RNUM' + IntToStr(rnum)+'X:'+ IntToStr(ex) +'Y:'+ IntToStr(ey));
+      flush(debugfile);
+    end;
     rnum := eventcaller(ex, ey);
     if (rnum < 0) or (rnum > length(Rrole) - 1) then
       rnum:=0;
   end;
-  writeln(debugfile, '查找RNUM' + IntToStr(rnum));
-  flush(debugfile);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '查找RNUM' + IntToStr(rnum));
+    flush(debugfile);
+  end;
   p1 := @Rrole[rnum].Name;
   namelen := length(Rrole[rnum].Name) + 2;
-  setlength(namearray, namelen);
+  //setlength(namearray, namelen);
   np := @namearray[0];
   kg:=-1;
   for n := 0 to namelen - 3 do
@@ -9225,15 +9258,19 @@ begin
   (np + kg + 2)^ := AnsiChar(0);
   namenum := rnum;
   HeadNum := Rrole[rnum].HeadNum;
-
-  writeln(debugfile, 'namenum:' + IntToStr(namenum) + ' HeadNum:' + IntToStr(HeadNum));
-  flush(debugfile);
-
+  if (debug = 1) then
+  begin
+    writeln(debugfile, 'namenum:' + IntToStr(namenum) + ' HeadNum:' + IntToStr(HeadNum));
+    flush(debugfile);
+  end;
   p1 := @Rrole[0].Name;
   alen := length(p1);
-  setlength(actorarray, alen);
-  writeln(debugfile, 'p1:' + p1 + ' alen:' + IntToStr(alen));
-  flush(debugfile);
+  //setlength(actorarray, alen);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, 'p1:' + p1 + ' alen:' + IntToStr(alen));
+    flush(debugfile);
+  end;
   ap := @actorarray[0];
   kg:=-1;
   for n := 0 to alen - 1 do
@@ -9245,17 +9282,20 @@ begin
   end;
   (ap + kg + 1)^ := AnsiChar($0);
   (ap + kg + 2)^ := AnsiChar(0);
-  writeln(debugfile, 'ap:' + ap +  ' p1:' + p1 + ' kg:' + IntToStr(kg));
-  flush(debugfile);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, 'ap:' + ap +  ' p1:' + p1 + ' kg:' + IntToStr(kg));
+    flush(debugfile);
+  end;
   if alen = 4 then
   begin
-    setlength(name1, 4);
+    //setlength(name1, 4);
     np1 := @name1[0];
     np1^ := ap^;
     (np1 + 1)^ := (ap + 1)^;
     (np1 + 2)^ := AnsiChar(0);
     (np1 + 3)^ := AnsiChar(0);
-    setlength(name2, 4);
+    //setlength(name2, 4);
     np2 := @name2[0];
     np2^ := ap^;
     for i := 0 to length(name2) - 1 do
@@ -9263,7 +9303,7 @@ begin
   end
   else if alen > 6 then
   begin
-    setlength(name1, 6);
+    //setlength(name1, 6);
     np1 := @name1[0];
     np1^ := ap^;
     (np1 + 1)^ := (ap + 1)^;
@@ -9271,24 +9311,25 @@ begin
     (np1 + 3)^ := (ap + 3)^;
     (np1 + 4)^ := AnsiChar(0);
     (np1 + 5)^ := AnsiChar(0);
-    setlength(name2, 6);
+    //setlength(name2, 6);
     np2 := @name2[0];
     for i := 0 to length(name2) - 1 do
       (np2 + i)^ := (ap + i + 4)^;
   end
   else if alen = 6 then
   begin
-    setlength(kname,6);
+    //setlength(kname,6);
     kp := @kname[0];
     for i:= 0 to 3 do
       (kp + i)^ := (ap + i)^;
     (kp + 4)^:=ansichar(0);
     (kp + 5)^:=ansichar(0);
     sp:=ansistring(kp);
-
-    writeln(debugfile, 'kp:' + kp +  ' sp:' + sp + ' ap:' + ap);
-    flush(debugfile);
-
+    if (debug = 1) then
+    begin
+      writeln(debugfile, 'kp:' + kp +  ' sp:' + sp + ' ap:' + ap);
+      flush(debugfile);
+    end;
     if (sp = '東方') or (sp = '歐陽') or (sp = '太史') or (sp = '端木')
     or (sp = '上官') or (sp = '司馬') or (sp = '獨孤') or (sp = '南宮') or
     (sp = '萬俟') or (sp = '聞人') or (sp = '夏侯') or (sp = '諸葛') or
@@ -9329,7 +9370,7 @@ begin
       ((puint16(ap)^ = $74A6) and ((puint16(ap + 2)^ = $E5A4))) or
       ((puint16(ap)^ = $DDA9) and ((puint16(ap + 2)^ = $5BB6))) then}
     begin
-      setlength(name1, 6);
+      //setlength(name1, 6);
       np1 := @name1[0];
       np1^ := ap^;
       (np1 + 1)^ := (ap + 1)^;
@@ -9337,27 +9378,31 @@ begin
       (np1 + 3)^ := (ap + 3)^;
       (np1 + 4)^ := AnsiChar(0);
       (np1 + 5)^ := AnsiChar(0);
-      setlength(name2, 4);
+      //setlength(name2, 4);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
         (np2 + i)^ := (ap + i + 4)^;
     end
     else
     begin
-      setlength(name1, 4);
+      //setlength(name1, 4);
       np1 := @name1[0];
       np1^ := ap^;
       (np1 + 1)^ := (ap + 1)^;
       (np1 + 2)^ := AnsiChar(0);
       (np1 + 3)^ := AnsiChar(0);
-      setlength(name2, 6);
+      //setlength(name2, 6);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
         (np2 + i)^ := (ap + i + 2)^;
     end;
   end;
-  writeln(debugfile, '姓：' + np1 + '名：'+ np2);
-  flush(debugfile);
+  //setlength(actorarray1, alen + 2);
+  if (debug = 1) then
+  begin
+    writeln(debugfile, '姓：' + np1 + '名：'+ np2);
+    flush(debugfile);
+  end;
   ch := 0;
 
   while ((puint16(tp + ch))^ shl 8 <> 0) and ((puint16(tp + ch))^ shr 8 <> 0) do
@@ -9450,7 +9495,7 @@ begin
                 pp1 := @rmenpai[x50[-2]].Data[x50[-3] div 2];
             end;
             alen := length(pp1);
-            setlength(actorarray1, alen + 2);
+
             app := @actorarray1[0];
             kg:=-1;
             for n := 0 to alen - 1 do
@@ -9546,10 +9591,9 @@ begin
       break;
   end;
   Redraw;
-
-  setlength(wd, 0);
-  setlength(str, 0);
-  setlength(temp2, 0);
+  //setlength(wd, 0);
+  //setlength(str, 0);
+  //setlength(temp2, 0);
 end;
 
 procedure levsort(var arr:array of smallint);

@@ -91,7 +91,7 @@ implementation
 function LoadModule(var Module: TModuleHandle; FileName: PAnsiChar): Boolean;
 begin
   if Module = INVALID_MODULEHANDLE_VALUE then
-    Module := LoadLibrary( pwidechar(string(FileName)) );
+    Module := LoadLibrary( pchar(string(FileName)) );
   Result := Module <> INVALID_MODULEHANDLE_VALUE;
 end;
 
@@ -102,7 +102,7 @@ end;
 function LoadModuleEx(var Module: TModuleHandle; FileName: PAnsiChar; Flags: Cardinal): Boolean;
 begin
   if Module = INVALID_MODULEHANDLE_VALUE then
-    Module := LoadLibraryEx( pwidechar(string(FileName)), 0, Flags);
+    Module := LoadLibraryEx( pchar(string(FileName)), 0, Flags);
   Result := Module <> INVALID_MODULEHANDLE_VALUE;
 end;
 

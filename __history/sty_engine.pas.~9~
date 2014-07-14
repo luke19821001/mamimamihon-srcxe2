@@ -698,6 +698,7 @@ var
   str: WideString;
   key: boolean;
   db1, db2: double;
+  tmpe:uint16;
 begin
   mpnum := Rrole[0].MenPai;
   for i := 0 to length(Rrole) - 1 do
@@ -721,11 +722,11 @@ begin
         zhiwujc6 := 0;
       if (Rrole[i].nweizhi >= 0) and (Rrole[i].nweizhi <= 4) then
       begin
-        tmp0 := Rrole[i].exp;
+        tmpe := Rrole[i].exp;
         Inc(Rrole[i].exp, round((Rrole[i].level * 2 + 20) * (100 + random(100))
           * (100 + zhiwujc6) / 25000));
         Rrole[i].exp := min(Rrole[i].exp, 35000);
-        Rrole_a[i].exp := Rrole_a[i].exp + Rrole[i].exp - tmp0;
+        Rrole_a[i].exp := uint16(Rrole_a[i].exp + Rrole[i].exp - tmpe);
         tmp0 := Rrole[i].ExpForBook;
         Inc(Rrole[i].ExpForBook,
           round((Rrole[i].level * 2 + 20) * (100 + random(100)) *
@@ -736,8 +737,8 @@ begin
         while (Rrole[i].level < MAX_LEVEL) and
           (uint16(Rrole[i].exp) >= uint16(LevelUplist[Rrole[i].level - 1])) do
         begin
-          Rrole_a[i].exp := Rrole_a[i].exp - LevelUplist[Rrole[i].level - 1];
-          Rrole[i].exp := Rrole[i].exp - LevelUplist[Rrole[i].level - 1];
+          Rrole_a[i].exp := uint16(Rrole_a[i].exp - LevelUplist[Rrole[i].level - 1]);
+          Rrole[i].exp := uint16(Rrole[i].exp - LevelUplist[Rrole[i].level - 1]);
           Rrole[i].level := Rrole[i].level + 1;
           LevelUp(i, 2);
         end;
@@ -889,11 +890,11 @@ begin
         begin
           if (random(200) >= Rrole[i].msq) and (Rrole[i].lmagic[0] < 1) then
           begin
-            tmp0 := Rrole[i].exp;
+            tmpe := Rrole[i].exp;
             Inc(Rrole[i].exp, round((Rrole[i].level * 4 + 40) *
               (100 + random(100)) * (100 + zhiwujc6) / 25000));
             Rrole[i].exp := min(Rrole[i].exp, 35000);
-            Rrole_a[i].exp := Rrole_a[i].exp + Rrole[i].exp - tmp0;
+            Rrole_a[i].exp := uint16(Rrole_a[i].exp + Rrole[i].exp - tmpe);
           end
           else
           begin
@@ -1203,6 +1204,7 @@ var
   str: WideString;
   db1, db2, db3, db4: double;
   now: uint32;
+  tmpe:uint16;
 begin
 
   mp0 := Rrole[0].MenPai;
@@ -1216,17 +1218,17 @@ begin
       db2 := Rrole[i].lwq * (Rmenpai[mpnum].czsd);
       db3 := mpzyjc(mpnum) * 30 * 8 / Rmenpai[mpnum].dizi;
       db4 := db1 * db2 * db3 / 250000000;
-      tmp0 := Rrole[i].exp;
+      tmpe := Rrole[i].exp;
       Inc(Rrole[i].exp, round(db4));
       Rrole[i].exp := min(Rrole[i].exp, 35000);
       while (Rrole[i].level < MAX_LEVEL) and
         (uint16(Rrole[i].exp) >= uint16(LevelUplist[Rrole[i].level - 1])) do
       begin
-        Rrole[i].exp := Rrole[i].exp - LevelUplist[Rrole[i].level - 1];
+        Rrole[i].exp := uint16(Rrole[i].exp - LevelUplist[Rrole[i].level - 1]);
         Rrole[i].level := Rrole[i].level + 1;
         LevelUp(i, 2);
       end;
-      Rrole_a[i].exp := Rrole_a[i].exp + Rrole[i].exp - tmp0;
+      Rrole_a[i].exp := uint16(Rrole_a[i].exp + Rrole[i].exp - tmpe);
       n := 0;
       n1 := 0;
       n2 := 0;
@@ -1909,14 +1911,16 @@ begin
 
   writeln(debugfile, '计算人物强度：' + IntToStr(rnum));
   flush(debugfile);
+  setlength(tgongti, 30);
+  setlength(tgtlev, 30);
+  setlength(tmagic, 30);
+  setlength(tmlev, 30);
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
-      setlength(tgongti, k1 + 1);
-      setlength(tgtlev, k1 + 1);
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -1925,8 +1929,6 @@ begin
     end
     else
     begin
-      setlength(tmagic, k2 + 1);
-      setlength(tmlev, k2 + 1);
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -1936,6 +1938,8 @@ begin
   end;
   if k1 > 0 then
   begin
+    setlength(tmag, 30);
+    setlength(tlev, 30);
     for i := 0 to k1 - 1 do
     begin
       value := Rmagic[tgongti[i]].AddHP[tgtlev[i]] * 2 + Rmagic[tgongti[i]]
@@ -1993,9 +1997,7 @@ begin
               writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
                + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               flush(debugfile);
-              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
-              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2052,14 +2054,17 @@ begin
   setgongti(rnum, 0);
   writeln(debugfile, '清除功体：' + IntToStr(rnum));
   flush(debugfile);
+  setlength(tgongti, 30);
+  setlength(tgtlev, 30);
+  setlength(tmagic, 30);
+  setlength(tmlev, 30);
   for j := 0 to 29 do
   begin
     if (Rrole[rnum].lmagic[j] <= 0) then
       break;
     if Rmagic[Rrole[rnum].lmagic[j]].magictype = 5 then
     begin
-      setlength(tgongti, k1 + 1);
-      setlength(tgtlev, k1 + 1);
+
       tgongti[k1] := Rrole[rnum].lmagic[j];
       tgtlev[k1] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选内功：' + IntToStr(tgongti[k1]) + ' 等级：' + IntToStr(tgtlev[k1]));
@@ -2068,8 +2073,7 @@ begin
     end
     else
     begin
-      setlength(tmagic, k2 + 1);
-      setlength(tmlev, k2 + 1);
+
       tmagic[k2] := Rrole[rnum].lmagic[j];
       tmlev[k2] := Rrole[rnum].maglevel[j] div 100;
       //writeln(debugfile, '筛选外功：' + IntToStr(tmagic[k2]) + ' 等级：' + IntToStr(tmlev[k2]));
@@ -2114,6 +2118,8 @@ begin
         value := value + 1000;
       value := round(power(value, 1.4));
       k3 := 0;
+      setlength(tmag, 30);
+      setlength(tlev, 30);
       //writeln(debugfile, '内功总分：' + IntToStr(round(value))) ;
       //flush(debugfile);
       if k2 > 0 then
@@ -2135,9 +2141,7 @@ begin
               //writeln(debugfile, '筛选支持外功K：' + IntToStr(k) + ' k3：' + IntToStr(k3)
               // + ' tmagic[i1]：' + IntToStr(tmagic[i1]) + ' tmlev[i1]：' + IntToStr(tmlev[i1])) ;
               //flush(debugfile);
-              setlength(tmag, k3 + 1);
               tmag[k3] := tmagic[i1];
-              setlength(tlev, k3 + 1);
               tlev[k3] := tmlev[i1];
               Inc(k3);
               break;
@@ -2173,13 +2177,14 @@ end;
 
 procedure magicsort(var mag, lev: array of integer);
 var
-  i, j, key1, key2: integer;
+  i, j, key1, key2 ,len: integer;
 begin
-  for i := length(mag) - 2 downto 0 do
+  len:=length(mag);
+  for i := len - 2 downto 0 do
   begin
     key1 := mag[i];
     key2 := lev[i];
-    for j := i + 1 to length(mag) - 1 do
+    for j := i + 1 to len - 1 do
     begin
       if countmagvalue(mag[j], lev[j]) > countmagvalue(key1, key2) then
       begin
@@ -2441,24 +2446,18 @@ begin
   if (tipsstring <> '') and (Showtips.num < 5) then
   begin
     Inc(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
     Showtips.str[Showtips.num - 1] := tipsstring;
-    setlength(Showtips.x, Showtips.num);
     Showtips.x[Showtips.num - 1] := CENTER_X * 2 + 50;
-    setlength(Showtips.y, Showtips.num);
     if Showtips.num > 1 then
       Showtips.y[Showtips.num - 1] := Showtips.y[Showtips.num - 2]
     else
       Showtips.y[Showtips.num - 1] := CENTER_Y * 2 - 40;
-    setlength(Showtips.yadd, Showtips.num);
     Showtips.yadd[Showtips.num - 1] := Showtips.y[Showtips.num - 1];
     for i := Showtips.num - 2 downto 0 do
     begin
       Showtips.yadd[i] := Showtips.yadd[i + 1] - 25;
     end;
-    setlength(Showtips.SurCreated, Showtips.num);
     Showtips.SurCreated[Showtips.num - 1] := false;
-    setlength(Showtips.Sur, Showtips.num);
   end;
 end;
 
@@ -2489,14 +2488,8 @@ begin
       Showtips.SurCreated[i] := Showtips.SurCreated[i + 1];
       Showtips.sur[i] := Showtips.sur[i + 1];
     end;
+    Showtips.SurCreated[Showtips.num - 1]:=false;
     Dec(Showtips.num);
-    setlength(Showtips.str, Showtips.num);
-    setlength(Showtips.x, Showtips.num);
-    setlength(Showtips.y, Showtips.num);
-    setlength(Showtips.yadd, Showtips.num);
-
-    setlength(Showtips.SurCreated, Showtips.num);
-    setlength(Showtips.Sur, Showtips.num);
     if num > Showtips.num then
     begin
       exit;
@@ -3260,14 +3253,17 @@ begin
               if (random(jgzhanli * Rmenpai[i].kzq) > (fyzhanli * 150)) and
                 (max0 > 0) then
               begin
+                kg:=-1;
                 for i3 := 0 to 19 do
                 begin
-                  kg := i3;
                   if mpbdata[i3].key < 0 then
+                  begin
+                    kg := i3;
                     break;
+                  end;
                 end;
                 i3:=kg;
-                if i3 > 19 then
+                if (i3 < 0) or (i3 > 19) then
                 begin
                   break;
                 end;
@@ -4097,6 +4093,7 @@ var
   ischeat: boolean;
   note: array of AnsiString;
   f: textfile;
+  tmpe:uint16;
 begin
   Count := 0;
   filename := 'R' + IntToStr(savenum);
@@ -4334,8 +4331,8 @@ begin
       note[Count - 1] := 'HidWeapon：' + IntToStr(i1);
       ischeat := True;
     end;
-    tmp := Rrole[i1].exp - Rrole_s[i1].exp;
-    if (tmp <> Rrole_a[i1].exp) then
+    tmpe := Rrole[i1].exp - Rrole_s[i1].exp;
+    if (tmpe <> Rrole_a[i1].exp) then
     begin
       Inc(Count);
       setlength(note, Count);
